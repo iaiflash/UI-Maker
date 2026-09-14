@@ -1,14 +1,18 @@
-<!-- Synced with index.html -->
 <!DOCTYPE html>
 <html lang="id" class="h-full bg-[#090a0f] text-zinc-100 antialiased selection:bg-indigo-500/30 selection:text-indigo-200">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>UI Maker — AI Website Generator (GAS Ready)</title>
+
+  <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Fonts: Plus Jakarta Sans & JetBrains Mono -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
   <script>
     tailwind.config = {
       darkMode: 'class',
@@ -22,17 +26,616 @@
       }
     }
   </script>
+
   <style>
+    /* Custom Scrollbar Minimalis */
     ::-webkit-scrollbar { width: 5px; height: 5px; }
     ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.12); border-radius: 9999px; }
     ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.25); }
   </style>
 </head>
+
 <body class="h-full flex flex-col bg-[#090a0f] text-zinc-100 font-sans overflow-hidden">
+
+  <!-- ==================================================================== -->
+  <!-- TOP NAVIGATION BAR (Clean, Modern, Simple) -->
+  <!-- ==================================================================== -->
+  <header class="h-14 border-b border-white/[0.08] bg-[#0c0d14]/90 backdrop-blur-xl px-5 flex items-center justify-between shrink-0 z-30">
+    <div class="flex items-center gap-3">
+      <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold text-sm shadow-md shadow-indigo-500/20">
+        ✦
+      </div>
+      <div>
+        <h1 class="text-sm font-bold tracking-tight text-white flex items-center gap-2">
+          UI Maker
+          <span class="text-[10px] font-medium px-2 py-0.5 rounded-md bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
+            GAS Edition
+          </span>
+        </h1>
+      </div>
+    </div>
+
+    <!-- Right Actions -->
+    <div class="flex items-center gap-2.5">
+      <button onclick="openApiKeyModal()" id="apiKeyBadgeBtn" class="flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-medium bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] text-zinc-300 hover:text-white transition-all">
+        <span class="w-2 h-2 rounded-full bg-amber-400" id="apiKeyStatusDot"></span>
+        <span id="apiKeyBadgeText">Set API Key</span>
+      </button>
+
+      <button onclick="openExportModal()" class="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-indigo-600 hover:bg-indigo-500 text-white shadow-md shadow-indigo-600/20 transition-all">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+        <span>Export ke GAS</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ==================================================================== -->
+  <!-- MAIN SPLIT VIEW (2 Panel Sederhana & Fungsional) -->
+  <!-- ==================================================================== -->
+  <main class="flex-1 flex flex-col lg:flex-row overflow-hidden">
+
+    <!-- ================================================================== -->
+    <!-- LEFT PANEL: PROMPT & KONTROL (420px Width) -->
+    <!-- ================================================================== -->
+    <aside class="w-full lg:w-[420px] xl:w-[460px] flex flex-col border-b lg:border-b-0 lg:border-r border-white/[0.08] bg-[#0c0d14]/40 p-5 overflow-y-auto shrink-0 space-y-5">
+      
+      <!-- Box Prompt Utama -->
+      <div class="space-y-2">
+        <label class="block text-xs font-bold text-zinc-300 uppercase tracking-wider">
+          Deskripsikan Website
+        </label>
+        
+        <div class="relative rounded-2xl bg-zinc-900/60 border border-white/[0.1] focus-within:border-indigo-500/80 p-3 transition-all shadow-lg">
+          <textarea id="promptInput" rows="4" placeholder="Contoh: Buatkan landing page modern untuk startup AI analytics dengan dark mode mewah, hero section dengan tombol CTA, bento grid fitur, dan tabel harga 3 tier..." class="w-full bg-transparent text-sm text-white placeholder-zinc-500 focus:outline-none resize-none leading-relaxed"></textarea>
+          
+          <!-- Image Attachment & Button Row -->
+          <div class="flex items-center justify-between pt-2 border-t border-white/[0.06] mt-2">
+            
+            <!-- Upload Screenshot Button -->
+            <div class="flex items-center gap-2">
+              <label for="imageUploadInput" class="cursor-pointer flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] text-xs text-zinc-400 hover:text-white transition-all" title="Unggah screenshot UI untuk dibedah">
+                <svg class="w-3.5 h-3.5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                <span id="attachedImageName" class="truncate max-w-[120px]">Screenshot UI</span>
+              </label>
+              <input type="file" id="imageUploadInput" accept="image/*" class="hidden" onchange="handleImageAttach(event)">
+              <button id="clearImageBtn" onclick="clearAttachedImage()" class="hidden text-xs text-zinc-500 hover:text-rose-400">✕</button>
+            </div>
+
+            <!-- Generate Action Button -->
+            <button id="btnGenerate" onclick="generateWebsite()" class="px-4 py-2 rounded-xl text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-500 shadow-lg shadow-indigo-600/30 flex items-center gap-1.5 transition-all disabled:opacity-50">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+              <span>Racik Website</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Preset Suggestions -->
+      <div class="space-y-2">
+        <div class="text-xs font-semibold text-zinc-400">Pilihan Cepat:</div>
+        <div class="space-y-1.5">
+          <button onclick="setPromptPreset('Landing page modern startup AI dengan background dark mode elegan, headline tipografi besar, bento grid 4 fitur, dan paket harga 3 kolom')" class="w-full text-left p-2.5 rounded-xl bg-white/[0.02] hover:bg-white/[0.06] border border-white/[0.06] hover:border-indigo-500/40 text-xs text-zinc-300 hover:text-white transition-all flex items-center justify-between group">
+            <span>⚡ <strong>SaaS AI Platform</strong> — Bento grid & Dark mode</span>
+            <span class="text-zinc-500 group-hover:text-indigo-400 font-mono text-[10px]">Pilih ➔</span>
+          </button>
+          <button onclick="setPromptPreset('Website digital creative agency minimalis bernuansa editorial, showcase portofolio modern, review klien bintang 5, dan tombol kontak konsultasi')" class="w-full text-left p-2.5 rounded-xl bg-white/[0.02] hover:bg-white/[0.06] border border-white/[0.06] hover:border-indigo-500/40 text-xs text-zinc-300 hover:text-white transition-all flex items-center justify-between group">
+            <span>🎨 <strong>Creative Agency</strong> — Minimalist & Portfolio</span>
+            <span class="text-zinc-500 group-hover:text-indigo-400 font-mono text-[10px]">Pilih ➔</span>
+          </button>
+          <button onclick="setPromptPreset('Landing page aplikasi mobile banking & fintech wallet berestetika bersih, highlight keamanan data, ulasan pengguna, dan tombol download')" class="w-full text-left p-2.5 rounded-xl bg-white/[0.02] hover:bg-white/[0.06] border border-white/[0.06] hover:border-indigo-500/40 text-xs text-zinc-300 hover:text-white transition-all flex items-center justify-between group">
+            <span>💳 <strong>Fintech App</strong> — Modern & Clean</span>
+            <span class="text-zinc-500 group-hover:text-indigo-400 font-mono text-[10px]">Pilih ➔</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Panduan Singkat / Cara Pakai -->
+      <div class="p-4 rounded-2xl bg-zinc-900/40 border border-white/[0.06] space-y-2 text-xs text-zinc-400">
+        <div class="font-bold text-white flex items-center gap-1.5">
+          <span>💡</span> Cara Pakai Sangat Mudah:
+        </div>
+        <ol class="space-y-1.5 list-decimal list-inside text-[11px] leading-relaxed">
+          <li>Klik <strong>Set API Key</strong> di pojok kanan atas (gratis dari Google AI Studio).</li>
+          <li>Ketik instruksi desain web di kolom atas atau pilih ide preset.</li>
+          <li>Klik <strong>Racik Website</strong>. Hasil langsung tayang di panel kanan!</li>
+          <li>Klik <strong>Export ke GAS</strong> untuk menyalin kode `Index.html` dan `Code.gs`.</li>
+        </ol>
+      </div>
+
+      <!-- Status Alur Kerja (Muncul saat proses jalan) -->
+      <div id="statusIndicatorBox" class="hidden p-3.5 rounded-xl bg-indigo-950/20 border border-indigo-500/30 text-xs space-y-2">
+        <div class="flex items-center justify-between font-semibold text-white">
+          <span class="flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-indigo-400 animate-ping"></span>
+            Sedang Meracik...
+          </span>
+          <span id="stepProgressText" class="text-[10px] font-mono text-indigo-300">Langkah 1/2</span>
+        </div>
+        <div class="text-[11px] text-zinc-400" id="stepDetailText">
+          Menyusun struktur layout dan komponen...
+        </div>
+      </div>
+
+    </aside>
+
+    <!-- ================================================================== -->
+    <!-- RIGHT PANEL: LIVE CANVAS FULL VIEW (Clean, Edge-to-Edge) -->
+    <!-- ================================================================== -->
+    <section class="flex-1 flex flex-col bg-black overflow-hidden relative">
+      
+      <!-- Canvas Bar -->
+      <div class="h-11 border-b border-white/[0.08] bg-[#0c0d14] px-4 flex items-center justify-between shrink-0">
+        
+        <!-- Toggle View (Preview vs Code) -->
+        <div class="flex items-center bg-zinc-900/80 p-0.5 rounded-lg border border-white/[0.08] text-xs">
+          <button id="viewTabPreview" onclick="switchCanvasView('preview')" class="px-3 py-1 rounded-md bg-white/10 text-white font-semibold transition-all">
+            Live Preview
+          </button>
+          <button id="viewTabCode" onclick="switchCanvasView('code')" class="px-3 py-1 rounded-md text-zinc-400 hover:text-white transition-all">
+            Kode HTML
+          </button>
+        </div>
+
+        <!-- Canvas Actions -->
+        <div class="flex items-center gap-2">
+          <button onclick="copyCurrentHtml()" class="flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-medium bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] text-zinc-300 hover:text-white transition-all">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path></svg>
+            <span>Salin HTML</span>
+          </button>
+          <button onclick="openInNewTab()" class="p-1.5 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] text-zinc-300 hover:text-white transition-all" title="Buka di tab baru">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+          </button>
+        </div>
+
+      </div>
+
+      <!-- Canvas Frame -->
+      <div class="flex-1 w-full h-full relative overflow-hidden bg-black">
+        
+        <!-- Loading Overlay -->
+        <div id="loadingOverlay" class="hidden absolute inset-0 z-20 bg-black/80 backdrop-blur-sm flex flex-col items-center justify-center p-6 text-center">
+          <div class="w-10 h-10 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin mb-4"></div>
+          <div class="text-sm font-bold text-white mb-1" id="loadingTitle">Meracik Website...</div>
+          <p class="text-xs text-zinc-400 max-w-xs" id="loadingSubtitle">Menghasilkan kode HTML & Tailwind CSS utuh.</p>
+        </div>
+
+        <!-- 1. Live Preview Iframe -->
+        <iframe id="previewIframe" class="w-full h-full border-0 bg-slate-950" sandbox="allow-scripts allow-same-origin allow-modals"></iframe>
+
+        <!-- 2. Raw Code View -->
+        <div id="codeViewWrapper" class="hidden absolute inset-0 bg-[#0c0d14] p-5 overflow-auto font-mono text-xs text-emerald-400 select-text">
+          <pre id="codeViewDisplay" class="whitespace-pre-wrap"></pre>
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- ==================================================================== -->
+  <!-- MODAL: EXPORT GOOGLE APPS SCRIPT (GAS) -->
+  <!-- ==================================================================== -->
+  <div id="gasModal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="w-full max-w-3xl bg-[#12131a] border border-white/[0.1] rounded-2xl p-6 shadow-2xl flex flex-col max-h-[85vh] space-y-4">
+      
+      <div class="flex items-center justify-between border-b border-white/[0.08] pb-3 shrink-0">
+        <div>
+          <h3 class="text-sm font-bold text-white flex items-center gap-2">
+            <span>📦</span> Paket Google Apps Script Siap Pakai
+          </h3>
+          <p class="text-xs text-zinc-400 mt-0.5">Tempelkan kedua file ini ke editor Google Apps Script (<code class="text-indigo-400">script.google.com</code>).</p>
+        </div>
+        <button onclick="closeExportModal()" class="text-zinc-400 hover:text-white text-sm">✕</button>
+      </div>
+
+      <!-- Tabs File -->
+      <div class="flex items-center bg-zinc-950 p-1 rounded-xl border border-white/[0.08] text-xs shrink-0">
+        <button id="modalTabBtnIndex" onclick="setModalTab('index')" class="flex-1 py-1.5 rounded-lg bg-white/10 text-white font-semibold transition-all">
+          📄 Index.html (Frontend UI)
+        </button>
+        <button id="modalTabBtnCode" onclick="setModalTab('code')" class="flex-1 py-1.5 rounded-lg text-zinc-400 hover:text-white transition-all">
+          ⚙️ Code.gs (Backend Controller)
+        </button>
+      </div>
+
+      <!-- Code Box -->
+      <div class="flex-1 bg-black/70 rounded-xl border border-white/[0.06] p-4 overflow-auto font-mono text-xs text-emerald-400 select-text">
+        <pre id="modalCodeDisplay" class="whitespace-pre-wrap"></pre>
+      </div>
+
+      <!-- Actions -->
+      <div class="flex items-center justify-between pt-2 border-t border-white/[0.08] shrink-0">
+        <div class="text-[11px] text-zinc-500">
+          Format standar kompatibel dengan <code class="text-zinc-400">HtmlService</code>.
+        </div>
+        <div class="flex items-center gap-2">
+          <button onclick="copyModalTabCode()" class="px-4 py-2 rounded-xl text-xs font-semibold bg-indigo-600 hover:bg-indigo-500 text-white transition-all">
+            Salin Kode Ini
+          </button>
+          <button onclick="downloadHtmlFile()" class="px-4 py-2 rounded-xl text-xs font-medium border border-white/[0.1] text-zinc-300 hover:bg-white/[0.05] transition-all">
+            Download .html
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ==================================================================== -->
+  <!-- MODAL: SET API KEY -->
+  <!-- ==================================================================== -->
+  <div id="apiKeyModal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="w-full max-w-md bg-[#12131a] border border-white/[0.1] rounded-2xl p-6 shadow-2xl space-y-4">
+      <div class="flex items-center justify-between border-b border-white/[0.08] pb-3">
+        <h3 class="text-sm font-bold text-white flex items-center gap-2">
+          <span>🔑</span> Masukkan Gemini API Key
+        </h3>
+        <button onclick="closeApiKeyModal()" class="text-zinc-400 hover:text-white text-sm">✕</button>
+      </div>
+
+      <p class="text-xs text-zinc-300 leading-relaxed">
+        API Key disimpan secara lokal di browser Anda. Tidak akan pernah dikirim atau dibagikan ke server lain.
+      </p>
+
+      <div class="space-y-2">
+        <input type="password" id="inputApiKey" placeholder="AIzaSy..." class="w-full bg-black/80 border border-white/[0.12] focus:border-indigo-500 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none font-mono">
+        <div class="text-[11px] text-zinc-500 flex justify-between">
+          <span>Gratis tanpa kartu kredit:</span>
+          <a href="https://aistudio.google.com/app/apikey" target="_blank" class="text-indigo-400 hover:underline">Google AI Studio →</a>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-end gap-2 pt-2">
+        <button onclick="closeApiKeyModal()" class="px-3 py-1.5 rounded-xl text-xs border border-white/[0.1] text-zinc-300 hover:bg-white/[0.05]">Batal</button>
+        <button onclick="saveApiKey()" class="px-4 py-1.5 rounded-xl text-xs font-semibold bg-indigo-600 hover:bg-indigo-500 text-white">Simpan</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST NOTIFIKASI -->
+  <div id="toast" class="fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 px-4 py-2.5 rounded-xl border border-white/[0.15] bg-[#1a1b24] text-xs text-white flex items-center gap-2 shadow-2xl pointer-events-none">
+    <span id="toastIcon">✓</span>
+    <span id="toastMsg">Pemberitahuan</span>
+  </div>
+
+  <!-- ==================================================================== -->
+  <!-- CLIENT JAVASCRIPT LOGIC -->
+  <!-- ==================================================================== -->
   <script>
-    // Redirect to lowercase index.html if opened directly
-    window.location.href = "index.html";
+    let generatedHtml = "";
+    let attachedImageBase64 = null;
+    let attachedImageMime = "image/png";
+    let activeModalTab = "index";
+
+    document.addEventListener("DOMContentLoaded", function() {
+      checkApiKeyBadge();
+      loadDefaultCanvas();
+
+      document.getElementById("promptInput").addEventListener("keydown", function(e) {
+        if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
+          generateWebsite();
+        }
+      });
+    });
+
+    // --- API Key Management ---
+    function getStoredApiKey() {
+      return localStorage.getItem("GEMINI_API_KEY") || "";
+    }
+
+    function checkApiKeyBadge() {
+      const key = getStoredApiKey();
+      const dot = document.getElementById("apiKeyStatusDot");
+      const text = document.getElementById("apiKeyBadgeText");
+      if (key) {
+        dot.className = "w-2 h-2 rounded-full bg-emerald-400";
+        text.innerText = "Key Aktif (" + key.substring(0, 4) + "...)";
+      } else {
+        dot.className = "w-2 h-2 rounded-full bg-amber-400";
+        text.innerText = "Set API Key";
+      }
+    }
+
+    function openApiKeyModal() {
+      document.getElementById("inputApiKey").value = getStoredApiKey();
+      document.getElementById("apiKeyModal").classList.remove("hidden");
+    }
+
+    function closeApiKeyModal() {
+      document.getElementById("apiKeyModal").classList.add("hidden");
+    }
+
+    function saveApiKey() {
+      const val = document.getElementById("inputApiKey").value.trim();
+      if (!val) { showToast("Masukkan key yang valid.", "warning"); return; }
+      localStorage.setItem("GEMINI_API_KEY", val);
+      checkApiKeyBadge();
+      closeApiKeyModal();
+      showToast("API Key berhasil disimpan!", "success");
+    }
+
+    function setPromptPreset(text) {
+      document.getElementById("promptInput").value = text;
+      document.getElementById("promptInput").focus();
+    }
+
+    // --- Image Attachment for Vision ---
+    function handleImageAttach(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      attachedImageMime = file.type;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        attachedImageBase64 = e.target.result;
+        document.getElementById("attachedImageName").innerText = file.name;
+        document.getElementById("clearImageBtn").classList.remove("hidden");
+        showToast("Screenshot UI siap dianalisis!", "success");
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function clearAttachedImage() {
+      attachedImageBase64 = null;
+      document.getElementById("imageUploadInput").value = "";
+      document.getElementById("attachedImageName").innerText = "Screenshot UI";
+      document.getElementById("clearImageBtn").classList.add("hidden");
+    }
+
+    // --- GENERATION ENGINE (Direct REST API Gemini 2.5 Flash) ---
+    async function generateWebsite() {
+      const prompt = document.getElementById("promptInput").value.trim();
+      if (!prompt) {
+        showToast("Tuliskan deskripsi website terlebih dahulu.", "warning");
+        return;
+      }
+
+      const apiKey = getStoredApiKey();
+      if (!apiKey) {
+        openApiKeyModal();
+        showToast("Harap masukkan Gemini API Key terlebih dahulu.", "warning");
+        return;
+      }
+
+      setLoading(true, "Meracik Website...", "Menghubungi Gemini 2.5 Flash API...");
+      showStatusProgress(true, "Langkah 1/2", "Menganalisis kebutuhan layout...");
+
+      try {
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${encodeURIComponent(apiKey)}`;
+        
+        const systemPrompt = `Anda adalah Lead Web Architect dunia.
+Buatkan dokumen HTML5 LENGKAP dan MANDIRI (Self-Contained) berbasis Tailwind CSS yang siap digunakan langsung di Google Apps Script (HtmlService).
+
+ATURAN DESAIN:
+1. Mulai dengan <!DOCTYPE html> sampai </html>.
+2. Di bagian <head>, sertakan CDN Tailwind: <script src="https://cdn.tailwindcss.com"><\/script> dan Google Fonts (Plus Jakarta Sans atau Inter).
+3. Buat desain yang sangat modern, bersih, elegan (dark mode mewah, aksen gradien halus, card hover effect, tipografi kontras tinggi, navigasi responsif, hero section, fitur/bento grid, pricing/solusi, dan footer).
+4. Gunakan copywriting bisnis nyata dan relevan (DILARANG menggunakan Lorem Ipsum).
+5. HANYA keluarkan kode HTML mentah tanpa blok markdown (\`\`\`html atau \`\`\`).`;
+
+        let userParts = [{ text: `Permintaan Klien:\n"${prompt}"\n\nRakit kode HTML5 lengkap dan responsif dengan Tailwind CSS.` }];
+        
+        if (attachedImageBase64) {
+          const cleanBase = attachedImageBase64.split(",")[1];
+          userParts.push({
+            inline_data: {
+              mime_type: attachedImageMime,
+              data: cleanBase
+            }
+          });
+          userParts[0].text += `\n(Gunakan juga screenshot referensi yang dilampirkan sebagai inspirasi tata letak dan palet warna).`;
+        }
+
+        showStatusProgress(true, "Langkah 2/2", "Menyusun kode HTML & Tailwind CSS...");
+
+        const response = await fetch(url, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            contents: [{ role: "user", parts: userParts }],
+            systemInstruction: { parts: [{ text: systemPrompt }] },
+            generationConfig: { temperature: 0.35, maxOutputTokens: 8192 }
+          })
+        });
+
+        const data = await response.json();
+        setLoading(false);
+        showStatusProgress(false);
+
+        if (data.error) {
+          throw new Error(data.error.message);
+        }
+
+        let rawHtml = data.candidates[0].content.parts[0].text;
+        let cleanHtml = rawHtml.replace(/^```html\s*/i, "").replace(/^```\s*/i, "").replace(/\s*```$/i, "").trim();
+
+        generatedHtml = cleanHtml;
+        renderIframe(generatedHtml);
+        document.getElementById("codeViewDisplay").innerText = generatedHtml;
+
+        showToast("Website berhasil diracik!", "success");
+      } catch (err) {
+        setLoading(false);
+        showStatusProgress(false);
+        console.error(err);
+        showToast("Gagal: " + err.message, "error");
+      }
+    }
+
+    function renderIframe(htmlCode) {
+      document.getElementById("previewIframe").srcdoc = htmlCode;
+    }
+
+    function loadDefaultCanvas() {
+      const welcome = `<!DOCTYPE html>
+<html lang="id" class="h-full bg-[#090a0f] text-white">
+<head>
+  <meta charset="UTF-8">
+  <script src="https://cdn.tailwindcss.com"><\/script>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body class="min-h-screen bg-[#090a0f] flex flex-col items-center justify-center p-6 text-center font-['Plus_Jakarta_Sans'] relative">
+  <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-indigo-500 to-purple-600 flex items-center justify-center text-white text-3xl font-bold mb-6 shadow-xl shadow-indigo-500/20">
+    ✦
+  </div>
+  <h2 class="text-3xl sm:text-4xl font-extrabold mb-3 tracking-tight">AI UI/UX Architect Generator</h2>
+  <p class="text-sm text-zinc-400 max-w-md mb-8 leading-relaxed">
+    Tuliskan deskripsi website di kolom kiri atau klik salah satu pilihan cepat. Hasil kode siap pakai untuk Google Apps Script akan langsung tampil di sini.
+  </p>
+  <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-zinc-900 border border-white/[0.08] text-xs text-indigo-400 font-mono">
+    Siap Menerima Perintah 🚀
+  </div>
+</body>
+</html>`;
+      generatedHtml = welcome;
+      renderIframe(welcome);
+      document.getElementById("codeViewDisplay").innerText = welcome;
+    }
+
+    // --- View Toggle & Actions ---
+    function switchCanvasView(mode) {
+      const bPrev = document.getElementById("viewTabPreview");
+      const bCode = document.getElementById("viewTabCode");
+      const iframe = document.getElementById("previewIframe");
+      const codeView = document.getElementById("codeViewWrapper");
+
+      if (mode === "preview") {
+        bPrev.className = "px-3 py-1 rounded-md bg-white/10 text-white font-semibold transition-all";
+        bCode.className = "px-3 py-1 rounded-md text-zinc-400 hover:text-white transition-all";
+        iframe.classList.remove("hidden");
+        codeView.classList.add("hidden");
+      } else {
+        bCode.className = "px-3 py-1 rounded-md bg-white/10 text-white font-semibold transition-all";
+        bPrev.className = "px-3 py-1 rounded-md text-zinc-400 hover:text-white transition-all";
+        iframe.classList.add("hidden");
+        codeView.classList.remove("hidden");
+      }
+    }
+
+    function copyCurrentHtml() {
+      if (!generatedHtml) return;
+      navigator.clipboard.writeText(generatedHtml).then(() => showToast("HTML disalin ke clipboard!", "success"));
+    }
+
+    function openInNewTab() {
+      if (!generatedHtml) return;
+      const blob = new Blob([generatedHtml], { type: "text/html" });
+      const url = URL.createObjectURL(blob);
+      window.open(url, "_blank");
+    }
+
+    // --- Export GAS Modal ---
+    function openExportModal() {
+      activeModalTab = "index";
+      document.getElementById("gasModal").classList.remove("hidden");
+      updateModalTabContent();
+    }
+
+    function closeExportModal() {
+      document.getElementById("gasModal").classList.add("hidden");
+    }
+
+    function setModalTab(tab) {
+      activeModalTab = tab;
+      const bIndex = document.getElementById("modalTabBtnIndex");
+      const bCode = document.getElementById("modalTabBtnCode");
+      if (tab === "index") {
+        bIndex.className = "flex-1 py-1.5 rounded-lg bg-white/10 text-white font-semibold transition-all";
+        bCode.className = "flex-1 py-1.5 rounded-lg text-zinc-400 hover:text-white transition-all";
+      } else {
+        bCode.className = "flex-1 py-1.5 rounded-lg bg-white/10 text-white font-semibold transition-all";
+        bIndex.className = "flex-1 py-1.5 rounded-lg text-zinc-400 hover:text-white transition-all";
+      }
+      updateModalTabContent();
+    }
+
+    function updateModalTabContent() {
+      const display = document.getElementById("modalCodeDisplay");
+      if (activeModalTab === "index") {
+        display.innerText = generatedHtml;
+      } else {
+        display.innerText = `/**
+ * Google Apps Script Backend Controller (Code.gs)
+ * File ini mengatur routing dan rendering antarmuka web.
+ */
+
+function doGet(e) {
+  return HtmlService.createTemplateFromFile("Index")
+    .evaluate()
+    .setTitle("Website Klien | UI Maker")
+    .addMetaTag("viewport", "width=device-width, initial-scale=1.0")
+    .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+}
+
+function include(filename) {
+  return HtmlService.createHtmlOutputFromFile(filename).getContent();
+}`;
+      }
+    }
+
+    function copyModalTabCode() {
+      const text = document.getElementById("modalCodeDisplay").innerText;
+      navigator.clipboard.writeText(text).then(() => showToast(`Kode ${activeModalTab === 'index' ? 'Index.html' : 'Code.gs'} disalin!`, "success"));
+    }
+
+    function downloadHtmlFile() {
+      if (!generatedHtml) return;
+      const blob = new Blob([generatedHtml], { type: "text/html" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "Index.html";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      showToast("File Index.html terunduh!", "success");
+    }
+
+    // --- Utility UI ---
+    function setLoading(isLoading, title, subtitle) {
+      const overlay = document.getElementById("loadingOverlay");
+      const btn = document.getElementById("btnGenerate");
+      if (isLoading) {
+        overlay.classList.remove("hidden");
+        btn.disabled = true;
+        if (title) document.getElementById("loadingTitle").innerText = title;
+        if (subtitle) document.getElementById("loadingSubtitle").innerText = subtitle;
+      } else {
+        overlay.classList.add("hidden");
+        btn.disabled = false;
+      }
+    }
+
+    function showStatusProgress(show, step, detail) {
+      const box = document.getElementById("statusIndicatorBox");
+      if (show) {
+        box.classList.remove("hidden");
+        document.getElementById("stepProgressText").innerText = step;
+        document.getElementById("stepDetailText").innerText = detail;
+      } else {
+        box.classList.add("hidden");
+      }
+    }
+
+    function showToast(msg, type = "info") {
+      const toast = document.getElementById("toast");
+      document.getElementById("toastMsg").innerText = msg;
+      const icon = document.getElementById("toastIcon");
+
+      if (type === "success") icon.innerText = "✓";
+      else if (type === "warning") icon.innerText = "⚠️";
+      else if (type === "error") icon.innerText = "✕";
+      else icon.innerText = "ℹ️";
+
+      toast.classList.remove("translate-y-20", "opacity-0");
+      toast.classList.add("translate-y-0", "opacity-100");
+
+      setTimeout(() => {
+        toast.classList.remove("translate-y-0", "opacity-100");
+        toast.classList.add("translate-y-20", "opacity-0");
+      }, 3000);
+    }
   </script>
 </body>
 </html>
