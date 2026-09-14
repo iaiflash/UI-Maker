@@ -3,7 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>UI Maker — AI Website Generator (GAS Ready)</title>
+  <title>UI Maker — AI Website Architect (GAS Edition)</title>
+
+  <!-- Favicon Premium (SVG Vector) -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%236366f1'/%3E%3Cstop offset='50%25' stop-color='%23a855f7'/%3E%3Cstop offset='100%25' stop-color='%23ec4899'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='32' height='32' rx='8' fill='%230f1016'/%3E%3Cpath d='M16 6L25 11.2V21.8L16 27L7 21.8V11.2L16 6Z' fill='none' stroke='url(%23g)' stroke-width='2.5' stroke-linejoin='round'/%3E%3Ccircle cx='16' cy='16.5' r='3.5' fill='url(%23g)'/%3E%3C/svg%3E">
 
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -33,141 +36,202 @@
     ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.12); border-radius: 9999px; }
     ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.25); }
+
+    /* Custom Radio Styling untuk Pilihan Bertingkat */
+    .option-card:has(input:checked) {
+      border-color: #6366f1;
+      background-color: rgba(99, 102, 241, 0.12);
+    }
+    .option-card:has(input:checked) .indicator-dot {
+      background-color: #6366f1;
+      border-color: #a5b4fc;
+      transform: scale(1.15);
+    }
   </style>
 </head>
 
-<body class="h-full flex flex-col bg-[#090a0f] text-zinc-100 font-sans overflow-hidden">
+<body class="h-full flex flex-col bg-[#090a0f] text-zinc-100 font-sans overflow-hidden select-none">
 
   <!-- ==================================================================== -->
-  <!-- TOP NAVIGATION BAR (Clean, Modern, Simple) -->
+  <!-- TOP NAVIGATION BAR -->
   <!-- ==================================================================== -->
   <header class="h-14 border-b border-white/[0.08] bg-[#0c0d14]/90 backdrop-blur-xl px-5 flex items-center justify-between shrink-0 z-30">
+    
+    <!-- Left: Brand Logo & Title -->
     <div class="flex items-center gap-3">
-      <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold text-sm shadow-md shadow-indigo-500/20">
-        ✦
+      <!-- Premium SVG Vector Brand Logo -->
+      <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 via-purple-600 to-pink-500 p-[1.5px] shadow-lg shadow-indigo-500/20">
+        <div class="w-full h-full bg-[#0c0d14] rounded-[10px] flex items-center justify-center">
+          <svg class="w-5 h-5 text-indigo-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>
+          </svg>
+        </div>
       </div>
       <div>
         <h1 class="text-sm font-bold tracking-tight text-white flex items-center gap-2">
           UI Maker
-          <span class="text-[10px] font-medium px-2 py-0.5 rounded-md bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
-            GAS Edition
+          <span class="text-[10px] font-semibold px-2 py-0.5 rounded-md bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
+            GAS Architect
           </span>
         </h1>
       </div>
     </div>
 
-    <!-- Right Actions -->
-    <div class="flex items-center gap-2.5">
-      <button onclick="openApiKeyModal()" id="apiKeyBadgeBtn" class="flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-medium bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] text-zinc-300 hover:text-white transition-all">
-        <span class="w-2 h-2 rounded-full bg-amber-400" id="apiKeyStatusDot"></span>
-        <span id="apiKeyBadgeText">Set API Key</span>
+    <!-- Right Controls -->
+    <div class="flex items-center gap-2">
+      <!-- Model Selector (Gemini 3.8 / 3.6 / 2.5) -->
+      <div class="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-white/[0.04] border border-white/[0.08] text-xs">
+        <span class="text-indigo-400 text-xs">⚡</span>
+        <select id="modelSelector" class="bg-transparent text-xs text-white font-mono focus:outline-none cursor-pointer">
+          <option value="gemini-3.8-flash" class="bg-[#12131a] text-white" selected>Gemini 3.8 Flash</option>
+          <option value="gemini-3.6-flash" class="bg-[#12131a] text-white">Gemini 3.6 Flash</option>
+          <option value="gemini-2.5-flash" class="bg-[#12131a] text-white">Gemini 2.5 Flash</option>
+        </select>
+      </div>
+
+      <!-- Button Database Komponen -->
+      <button onclick="openDatabaseModal()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] text-zinc-300 hover:text-white transition-all">
+        <svg class="w-3.5 h-3.5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+        <span>Database Komponen</span>
       </button>
 
+      <!-- Button Panduan Cara Pakai (Modal Pop-up) -->
+      <button onclick="openGuideModal()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] text-zinc-300 hover:text-white transition-all">
+        <svg class="w-3.5 h-3.5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+        <span>Cara Pakai</span>
+      </button>
+
+      <!-- Button API Key -->
+      <button onclick="openApiKeyModal()" id="apiKeyBadgeBtn" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] text-zinc-300 hover:text-white transition-all">
+        <span class="w-2 h-2 rounded-full bg-amber-400" id="apiKeyStatusDot"></span>
+        <span id="apiKeyBadgeText">API Key</span>
+      </button>
+
+      <!-- Button Export GAS -->
       <button onclick="openExportModal()" class="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-indigo-600 hover:bg-indigo-500 text-white shadow-md shadow-indigo-600/20 transition-all">
         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-        <span>Export ke GAS</span>
+        <span>Export GAS</span>
       </button>
     </div>
+
   </header>
 
   <!-- ==================================================================== -->
-  <!-- MAIN SPLIT VIEW (2 Panel Sederhana & Fungsional) -->
+  <!-- MAIN WORKSPACE -->
   <!-- ==================================================================== -->
   <main class="flex-1 flex flex-col lg:flex-row overflow-hidden">
 
     <!-- ================================================================== -->
-    <!-- LEFT PANEL: PROMPT & KONTROL (420px Width) -->
+    <!-- LEFT PANEL: ALUR BERTINGKAT (420px Width) -->
     <!-- ================================================================== -->
-    <aside class="w-full lg:w-[420px] xl:w-[460px] flex flex-col border-b lg:border-b-0 lg:border-r border-white/[0.08] bg-[#0c0d14]/40 p-5 overflow-y-auto shrink-0 space-y-5">
-      
-      <!-- Box Prompt Utama -->
-      <div class="space-y-2">
-        <label class="block text-xs font-bold text-zinc-300 uppercase tracking-wider">
-          Deskripsikan Website
-        </label>
-        
-        <div class="relative rounded-2xl bg-zinc-900/60 border border-white/[0.1] focus-within:border-indigo-500/80 p-3 transition-all shadow-lg">
-          <textarea id="promptInput" rows="4" placeholder="Contoh: Buatkan landing page modern untuk startup AI analytics dengan dark mode mewah, hero section dengan tombol CTA, bento grid fitur, dan tabel harga 3 tier..." class="w-full bg-transparent text-sm text-white placeholder-zinc-500 focus:outline-none resize-none leading-relaxed"></textarea>
+    <aside class="w-full lg:w-[440px] xl:w-[480px] flex flex-col border-b lg:border-b-0 lg:border-r border-white/[0.08] bg-[#0c0d14]/40 p-5 overflow-y-auto shrink-0 space-y-4">
+
+      <!-- ================= TAHAP 1: INPUT CHAT KLIEN ================= -->
+      <div id="stage1Container" class="space-y-3">
+        <div class="flex items-center justify-between">
+          <label class="text-xs font-bold text-zinc-300 uppercase tracking-wider flex items-center gap-1.5">
+            <span class="w-5 h-5 rounded-full bg-indigo-600/30 text-indigo-400 text-[11px] font-bold flex items-center justify-center border border-indigo-500/30">1</span>
+            Daftar Chat Klien
+          </label>
+          <span class="text-[10px] text-zinc-500 font-mono">Tempel Riwayat Obrolan</span>
+        </div>
+
+        <div class="relative rounded-2xl bg-zinc-900/70 border border-white/[0.1] focus-within:border-indigo-500/80 p-3 transition-all shadow-lg">
+          <textarea id="clientChatInput" rows="7" placeholder="Tempelkan chat mentah dari klien Anda di sini...&#10;&#10;Contoh chat:&#10;Klien: 'Halo mas, saya mau buat website untuk coffee shop & roastery kekinian saya. Ada menu signature, cerita tentang biji kopi petani lokal, ulasan pelanggan, dan tombol pesan via WhatsApp...'" class="w-full bg-transparent text-sm text-white placeholder-zinc-500 focus:outline-none resize-none leading-relaxed"></textarea>
           
-          <!-- Image Attachment & Button Row -->
-          <div class="flex items-center justify-between pt-2 border-t border-white/[0.06] mt-2">
-            
-            <!-- Upload Screenshot Button -->
+          <!-- Image upload option -->
+          <div class="flex items-center justify-between pt-2.5 border-t border-white/[0.06] mt-1">
             <div class="flex items-center gap-2">
-              <label for="imageUploadInput" class="cursor-pointer flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] text-xs text-zinc-400 hover:text-white transition-all" title="Unggah screenshot UI untuk dibedah">
-                <svg class="w-3.5 h-3.5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                <span id="attachedImageName" class="truncate max-w-[120px]">Screenshot UI</span>
+              <label for="imageUploadInput" class="cursor-pointer flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] text-xs text-zinc-400 hover:text-white transition-all">
+                <svg class="w-3.5 h-3.5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                <span id="attachedImageLabel" class="truncate max-w-[130px]">Screenshot UI</span>
               </label>
-              <input type="file" id="imageUploadInput" accept="image/*" class="hidden" onchange="handleImageAttach(event)">
+              <input type="file" id="imageUploadInput" accept="image/*" class="hidden" onchange="handleImageAttachment(event)">
               <button id="clearImageBtn" onclick="clearAttachedImage()" class="hidden text-xs text-zinc-500 hover:text-rose-400">✕</button>
             </div>
 
-            <!-- Generate Action Button -->
-            <button id="btnGenerate" onclick="generateWebsite()" class="px-4 py-2 rounded-xl text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-500 shadow-lg shadow-indigo-600/30 flex items-center gap-1.5 transition-all disabled:opacity-50">
-              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-              <span>Racik Website</span>
+            <button onclick="analyzeClientChat()" id="btnAnalyze" class="px-4 py-2 rounded-xl text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-500 shadow-md shadow-indigo-600/25 flex items-center gap-1.5 transition-all disabled:opacity-50">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+              <span>Pahami Chat Klien</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Contoh Preset Chat -->
+        <div class="pt-1">
+          <div class="text-[11px] font-semibold text-zinc-500 mb-1.5">Atau coba sampel chat klien:</div>
+          <div class="flex flex-wrap gap-1.5">
+            <button onclick="loadSampleChat('coffee')" class="text-[11px] px-2.5 py-1 rounded-lg bg-white/[0.03] hover:bg-white/[0.08] border border-white/[0.06] text-zinc-400 hover:text-white transition-all">
+              ☕ Coffee Roastery
+            </button>
+            <button onclick="loadSampleChat('saas')" class="text-[11px] px-2.5 py-1 rounded-lg bg-white/[0.03] hover:bg-white/[0.08] border border-white/[0.06] text-zinc-400 hover:text-white transition-all">
+              🚀 AI Productivity SaaS
+            </button>
+            <button onclick="loadSampleChat('lawyer')" class="text-[11px] px-2.5 py-1 rounded-lg bg-white/[0.03] hover:bg-white/[0.08] border border-white/[0.06] text-zinc-400 hover:text-white transition-all">
+              ⚖️ Kantor Hukum / Legal
             </button>
           </div>
         </div>
       </div>
 
-      <!-- Quick Preset Suggestions -->
-      <div class="space-y-2">
-        <div class="text-xs font-semibold text-zinc-400">Pilihan Cepat:</div>
-        <div class="space-y-1.5">
-          <button onclick="setPromptPreset('Landing page modern startup AI dengan background dark mode elegan, headline tipografi besar, bento grid 4 fitur, dan paket harga 3 kolom')" class="w-full text-left p-2.5 rounded-xl bg-white/[0.02] hover:bg-white/[0.06] border border-white/[0.06] hover:border-indigo-500/40 text-xs text-zinc-300 hover:text-white transition-all flex items-center justify-between group">
-            <span>⚡ <strong>SaaS AI Platform</strong> — Bento grid & Dark mode</span>
-            <span class="text-zinc-500 group-hover:text-indigo-400 font-mono text-[10px]">Pilih ➔</span>
-          </button>
-          <button onclick="setPromptPreset('Website digital creative agency minimalis bernuansa editorial, showcase portofolio modern, review klien bintang 5, dan tombol kontak konsultasi')" class="w-full text-left p-2.5 rounded-xl bg-white/[0.02] hover:bg-white/[0.06] border border-white/[0.06] hover:border-indigo-500/40 text-xs text-zinc-300 hover:text-white transition-all flex items-center justify-between group">
-            <span>🎨 <strong>Creative Agency</strong> — Minimalist & Portfolio</span>
-            <span class="text-zinc-500 group-hover:text-indigo-400 font-mono text-[10px]">Pilih ➔</span>
-          </button>
-          <button onclick="setPromptPreset('Landing page aplikasi mobile banking & fintech wallet berestetika bersih, highlight keamanan data, ulasan pengguna, dan tombol download')" class="w-full text-left p-2.5 rounded-xl bg-white/[0.02] hover:bg-white/[0.06] border border-white/[0.06] hover:border-indigo-500/40 text-xs text-zinc-300 hover:text-white transition-all flex items-center justify-between group">
-            <span>💳 <strong>Fintech App</strong> — Modern & Clean</span>
-            <span class="text-zinc-500 group-hover:text-indigo-400 font-mono text-[10px]">Pilih ➔</span>
+      <!-- ================= TAHAP 2: PILIHAN GANDA BERTINGKAT ================= -->
+      <div id="stage2Container" class="hidden space-y-4 pt-2 border-t border-white/[0.08]">
+        
+        <div class="flex items-center justify-between">
+          <label class="text-xs font-bold text-zinc-300 uppercase tracking-wider flex items-center gap-1.5">
+            <span class="w-5 h-5 rounded-full bg-purple-600/30 text-purple-400 text-[11px] font-bold flex items-center justify-center border border-purple-500/30">2</span>
+            Pilihan Desain Bertingkat
+          </label>
+          <button onclick="resetToStage1()" class="text-[11px] text-zinc-400 hover:text-indigo-400 transition-colors">
+            ← Ganti Chat
           </button>
         </div>
-      </div>
 
-      <!-- Panduan Singkat / Cara Pakai -->
-      <div class="p-4 rounded-2xl bg-zinc-900/40 border border-white/[0.06] space-y-2 text-xs text-zinc-400">
-        <div class="font-bold text-white flex items-center gap-1.5">
-          <span>💡</span> Cara Pakai Sangat Mudah:
+        <!-- Ringkasan Kebutuhan Klien oleh AI -->
+        <div class="p-3 rounded-xl bg-indigo-950/20 border border-indigo-500/20 text-xs">
+          <div class="font-bold text-indigo-300 mb-1 flex items-center gap-1.5">
+            <span>💡</span> Hasil Analisis AI terhadap Klien:
+          </div>
+          <p id="analysisSummaryText" class="text-zinc-300 leading-relaxed text-[11px]"></p>
         </div>
-        <ol class="space-y-1.5 list-decimal list-inside text-[11px] leading-relaxed">
-          <li>Klik <strong>Set API Key</strong> di pojok kanan atas (gratis dari Google AI Studio).</li>
-          <li>Ketik instruksi desain web di kolom atas atau pilih ide preset.</li>
-          <li>Klik <strong>Racik Website</strong>. Hasil langsung tayang di panel kanan!</li>
-          <li>Klik <strong>Export ke GAS</strong> untuk menyalin kode `Index.html` dan `Code.gs`.</li>
-        </ol>
+
+        <!-- Formulir Bertingkat (Render Dinamis) -->
+        <div id="questionnaireWrapper" class="space-y-4"></div>
+
+        <!-- Tombol Eksekusi Perakitan Desain -->
+        <div class="pt-2">
+          <button onclick="generateFinalDesignFromChoices()" id="btnGenerateFinal" class="w-full py-3 rounded-xl text-xs font-semibold text-white bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 shadow-lg shadow-indigo-600/30 flex items-center justify-center gap-2 transition-all">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+            <span>Racik Desain dari Pilihan Ini</span>
+          </button>
+        </div>
+
       </div>
 
-      <!-- Status Alur Kerja (Muncul saat proses jalan) -->
-      <div id="statusIndicatorBox" class="hidden p-3.5 rounded-xl bg-indigo-950/20 border border-indigo-500/30 text-xs space-y-2">
+      <!-- Indikator Loading Saat AI Bekerja -->
+      <div id="leftPanelLoader" class="hidden p-4 rounded-xl bg-indigo-950/20 border border-indigo-500/30 text-xs space-y-2">
         <div class="flex items-center justify-between font-semibold text-white">
           <span class="flex items-center gap-2">
             <span class="w-2 h-2 rounded-full bg-indigo-400 animate-ping"></span>
-            Sedang Meracik...
+            <span id="loaderTitle">AI Sedang Menganalisis...</span>
           </span>
-          <span id="stepProgressText" class="text-[10px] font-mono text-indigo-300">Langkah 1/2</span>
+          <span id="loaderStep" class="text-[10px] font-mono text-indigo-300">Menunggu</span>
         </div>
-        <div class="text-[11px] text-zinc-400" id="stepDetailText">
-          Menyusun struktur layout dan komponen...
+        <div class="text-[11px] text-zinc-400" id="loaderSubtitle">
+          Mengekstrak maksud klien dan menyiapkan formulir bertingkat...
         </div>
       </div>
 
     </aside>
 
     <!-- ================================================================== -->
-    <!-- RIGHT PANEL: LIVE CANVAS FULL VIEW (Clean, Edge-to-Edge) -->
+    <!-- RIGHT PANEL: LIVE CANVAS PREVIEW (Clean & Full) -->
     <!-- ================================================================== -->
     <section class="flex-1 flex flex-col bg-black overflow-hidden relative">
       
       <!-- Canvas Bar -->
       <div class="h-11 border-b border-white/[0.08] bg-[#0c0d14] px-4 flex items-center justify-between shrink-0">
-        
-        <!-- Toggle View (Preview vs Code) -->
+        <!-- View Toggle -->
         <div class="flex items-center bg-zinc-900/80 p-0.5 rounded-lg border border-white/[0.08] text-xs">
           <button id="viewTabPreview" onclick="switchCanvasView('preview')" class="px-3 py-1 rounded-md bg-white/10 text-white font-semibold transition-all">
             Live Preview
@@ -177,7 +241,7 @@
           </button>
         </div>
 
-        <!-- Canvas Actions -->
+        <!-- Actions -->
         <div class="flex items-center gap-2">
           <button onclick="copyCurrentHtml()" class="flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-medium bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] text-zinc-300 hover:text-white transition-all">
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path></svg>
@@ -187,17 +251,16 @@
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
           </button>
         </div>
-
       </div>
 
       <!-- Canvas Frame -->
       <div class="flex-1 w-full h-full relative overflow-hidden bg-black">
         
-        <!-- Loading Overlay -->
-        <div id="loadingOverlay" class="hidden absolute inset-0 z-20 bg-black/80 backdrop-blur-sm flex flex-col items-center justify-center p-6 text-center">
+        <!-- Live Loading Overlay -->
+        <div id="canvasLoader" class="hidden absolute inset-0 z-20 bg-black/85 backdrop-blur-sm flex flex-col items-center justify-center p-6 text-center">
           <div class="w-10 h-10 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin mb-4"></div>
-          <div class="text-sm font-bold text-white mb-1" id="loadingTitle">Meracik Website...</div>
-          <p class="text-xs text-zinc-400 max-w-xs" id="loadingSubtitle">Menghasilkan kode HTML & Tailwind CSS utuh.</p>
+          <div class="text-sm font-bold text-white mb-1" id="canvasLoaderTitle">Meracik Website...</div>
+          <p class="text-xs text-zinc-400 max-w-xs" id="canvasLoaderSubtitle">Menghasilkan kode HTML & Tailwind CSS sesuai pilihan Anda.</p>
         </div>
 
         <!-- 1. Live Preview Iframe -->
@@ -215,7 +278,107 @@
   </main>
 
   <!-- ==================================================================== -->
-  <!-- MODAL: EXPORT GOOGLE APPS SCRIPT (GAS) -->
+  <!-- MODAL 1: CARA PAKAI (PANDUAN LENGKAP & JELAS) -->
+  <!-- ==================================================================== -->
+  <div id="guideModal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="w-full max-w-xl bg-[#12131a] border border-white/[0.1] rounded-2xl p-6 shadow-2xl space-y-4 max-h-[85vh] overflow-y-auto">
+      
+      <div class="flex items-center justify-between border-b border-white/[0.08] pb-3">
+        <h3 class="text-sm font-bold text-white flex items-center gap-2">
+          <span>📖</span> Panduan Cara Pakai UI Maker
+        </h3>
+        <button onclick="closeGuideModal()" class="text-zinc-400 hover:text-white text-sm">✕</button>
+      </div>
+
+      <div class="space-y-3.5 text-xs text-zinc-300 leading-relaxed">
+        <div class="p-3 rounded-xl bg-white/[0.02] border border-white/[0.06]">
+          <strong class="text-indigo-400 block mb-1">Langkah 1: Setup API Key</strong>
+          Klik tombol <strong>API Key</strong> di kanan atas, lalu masukkan Gemini API Key gratis Anda (dapatkan di <a href="https://aistudio.google.com/app/apikey" target="_blank" class="text-indigo-400 underline">Google AI Studio</a>). Disimpan aman di browser Anda.
+        </div>
+
+        <div class="p-3 rounded-xl bg-white/[0.02] border border-white/[0.06]">
+          <strong class="text-indigo-400 block mb-1">Langkah 2: Tempel Chat Klien</strong>
+          Klien sering kali memberikan instruksi yang acak-acakan di WhatsApp/Email. Cukup salin seluruh percakapan chat tersebut dan tempelkan ke kolom <strong>"Daftar Chat Klien"</strong>.
+        </div>
+
+        <div class="p-3 rounded-xl bg-white/[0.02] border border-white/[0.06]">
+          <strong class="text-indigo-400 block mb-1">Langkah 3: Jawab Pilihan Ganda Bertingkat</strong>
+          Klik <strong>"Pahami Chat Klien"</strong>. AI akan membedah kebutuhan bisnis klien dan memberikan beberapa pilihan ganda (gaya desain, susunan section, skema warna). Anda cukup klik pilihan terbaik menurut selera Anda!
+        </div>
+
+        <div class="p-3 rounded-xl bg-white/[0.02] border border-white/[0.06]">
+          <strong class="text-indigo-400 block mb-1">Langkah 4: Hasil & Export ke GAS</strong>
+          Website akan langsung tampil di Live Canvas. Klik tombol <strong>Export GAS</strong> di kanan atas untuk mendapatkan kode <code class="text-indigo-300">Index.html</code> dan <code class="text-indigo-300">Code.gs</code> yang siap dimasukkan ke Google Apps Script!
+        </div>
+      </div>
+
+      <div class="flex justify-end pt-2 border-t border-white/[0.08]">
+        <button onclick="closeGuideModal()" class="px-4 py-2 rounded-xl text-xs font-semibold bg-indigo-600 hover:bg-indigo-500 text-white">Mengerti, Tutup</button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ==================================================================== -->
+  <!-- MODAL 2: DATABASE KOMPONEN (LIHAT & TAMBAH DATA) -->
+  <!-- ==================================================================== -->
+  <div id="databaseModal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="w-full max-w-3xl bg-[#12131a] border border-white/[0.1] rounded-2xl p-6 shadow-2xl flex flex-col max-h-[85vh] space-y-4">
+      
+      <div class="flex items-center justify-between border-b border-white/[0.08] pb-3 shrink-0">
+        <div>
+          <h3 class="text-sm font-bold text-white flex items-center gap-2">
+            <span>🧩</span> Database Komponen Tailwind CSS
+          </h3>
+          <p class="text-xs text-zinc-400 mt-0.5">Komponen yang digunakan sebagai referensi oleh AI saat meracik website.</p>
+        </div>
+        <button onclick="closeDatabaseModal()" class="text-zinc-400 hover:text-white text-sm">✕</button>
+      </div>
+
+      <!-- Bar Tambah Komponen & Filter -->
+      <div class="flex items-center justify-between gap-3 shrink-0">
+        <input type="text" id="dbSearchInput" oninput="filterComponentsList()" placeholder="Cari komponen (hero, navbar, bento, pricing)..." class="flex-1 bg-black/60 border border-white/[0.08] rounded-xl px-3 py-1.5 text-xs text-white focus:outline-none focus:border-indigo-500">
+        
+        <button onclick="toggleAddComponentForm()" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-indigo-600 hover:bg-indigo-500 text-white flex items-center gap-1">
+          <span>+</span> Tambah Komponen
+        </button>
+      </div>
+
+      <!-- Form Tambah Komponen (Hidden by default) -->
+      <div id="addComponentForm" class="hidden p-4 rounded-xl bg-black/70 border border-indigo-500/30 space-y-3 shrink-0">
+        <div class="text-xs font-bold text-indigo-300">Input Komponen Baru ke Database:</div>
+        <div class="grid grid-cols-2 gap-3">
+          <input type="text" id="newCompName" placeholder="Nama Komponen (misal: Minimalist Hero CTA)" class="bg-zinc-900 border border-white/[0.08] rounded-lg px-3 py-1.5 text-xs text-white">
+          <select id="newCompCategory" class="bg-zinc-900 border border-white/[0.08] rounded-lg px-3 py-1.5 text-xs text-white">
+            <option value="navbar">Navbar</option>
+            <option value="hero" selected>Hero Section</option>
+            <option value="features">Features / Bento Grid</option>
+            <option value="pricing">Pricing Table</option>
+            <option value="testimonials">Testimonials</option>
+            <option value="footer">Footer</option>
+          </select>
+        </div>
+        <input type="text" id="newCompTags" placeholder="Tags (pisahkan dengan koma: modern, dark, button, saas)" class="w-full bg-zinc-900 border border-white/[0.08] rounded-lg px-3 py-1.5 text-xs text-white">
+        <textarea id="newCompHtml" rows="3" placeholder="Kode HTML Tailwind CSS (contoh: <section class='py-20 bg-slate-950'>...</section>)" class="w-full bg-zinc-900 border border-white/[0.08] rounded-lg p-2 font-mono text-xs text-white"></textarea>
+        <div class="flex justify-end gap-2">
+          <button onclick="toggleAddComponentForm()" class="px-3 py-1 rounded-lg text-xs border border-white/[0.1] text-zinc-400">Batal</button>
+          <button onclick="saveNewComponentToDb()" class="px-4 py-1 rounded-lg text-xs font-semibold bg-indigo-600 text-white">Simpan ke Database</button>
+        </div>
+      </div>
+
+      <!-- List Komponen -->
+      <div id="componentsCatalogList" class="flex-1 overflow-y-auto space-y-2 pr-1"></div>
+
+      <div class="pt-2 border-t border-white/[0.08] flex justify-between items-center text-[11px] text-zinc-500 shrink-0">
+        <span>Tersimpan di database lokal browser (LocalStorage).</span>
+        <button onclick="closeDatabaseModal()" class="px-3 py-1.5 rounded-lg bg-white/[0.04] text-zinc-300 hover:text-white">Tutup</button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ==================================================================== -->
+  <!-- MODAL 3: EXPORT GOOGLE APPS SCRIPT (GAS) -->
   <!-- ==================================================================== -->
   <div id="gasModal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
     <div class="w-full max-w-3xl bg-[#12131a] border border-white/[0.1] rounded-2xl p-6 shadow-2xl flex flex-col max-h-[85vh] space-y-4">
@@ -264,7 +427,7 @@
   </div>
 
   <!-- ==================================================================== -->
-  <!-- MODAL: SET API KEY -->
+  <!-- MODAL 4: SET API KEY -->
   <!-- ==================================================================== -->
   <div id="apiKeyModal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
     <div class="w-full max-w-md bg-[#12131a] border border-white/[0.1] rounded-2xl p-6 shadow-2xl space-y-4">
@@ -276,13 +439,13 @@
       </div>
 
       <p class="text-xs text-zinc-300 leading-relaxed">
-        API Key disimpan secara lokal di browser Anda. Tidak akan pernah dikirim atau dibagikan ke server lain.
+        API Key disimpan secara lokal di browser Anda. Aman 100% dan tidak akan pernah dibagikan ke server mana pun.
       </p>
 
       <div class="space-y-2">
         <input type="password" id="inputApiKey" placeholder="AIzaSy..." class="w-full bg-black/80 border border-white/[0.12] focus:border-indigo-500 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none font-mono">
         <div class="text-[11px] text-zinc-500 flex justify-between">
-          <span>Gratis tanpa kartu kredit:</span>
+          <span>Dapatkan key gratis:</span>
           <a href="https://aistudio.google.com/app/apikey" target="_blank" class="text-indigo-400 hover:underline">Google AI Studio →</a>
         </div>
       </div>
@@ -308,19 +471,56 @@
     let attachedImageBase64 = null;
     let attachedImageMime = "image/png";
     let activeModalTab = "index";
+    let analyzedClientContext = null;
+
+    // Database Komponen Default
+    const DEFAULT_COMPONENTS = [
+      {
+        id: "hero-saas-glow",
+        name: "AI SaaS High-Impact Glow Hero",
+        category: "hero",
+        tags: ["hero", "saas", "glow", "gradient", "ai"],
+        html: `<section class="relative min-h-[90vh] flex items-center justify-center pt-28 pb-16 px-6 bg-slate-950 text-white overflow-hidden"><div class="absolute top-1/4 left-1/2 -translate-x-1/2 w-[550px] h-[300px] bg-gradient-to-tr from-indigo-600/30 via-purple-600/20 to-pink-500/20 blur-[120px] rounded-full pointer-events-none"></div><div class="relative max-w-4xl mx-auto text-center"><div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-indigo-500/30 bg-indigo-950/40 text-indigo-300 text-xs font-medium mb-6 backdrop-blur-md">✦ Generasi Baru UI 3.0</div><h1 class="text-4xl sm:text-6xl font-black tracking-tight mb-6 leading-tight">Rancang Website Impian <br><span class="bg-gradient-to-r from-indigo-400 via-purple-300 to-pink-400 bg-clip-text text-transparent">10x Lebih Cepat dengan AI</span></h1><p class="text-slate-400 text-base sm:text-lg max-w-xl mx-auto mb-8 leading-relaxed">Ubah instruksi klien menjadi antarmuka web modern dengan Tailwind CSS.</p><div class="flex justify-center gap-4"><a href="#cta" class="px-7 py-3.5 rounded-xl font-bold bg-indigo-600 hover:bg-indigo-500 shadow-xl shadow-indigo-600/30 transition-all">Mulai Sekarang 🚀</a></div></div></section>`
+      },
+      {
+        id: "hero-coffee-warm",
+        name: "Artisanal Coffee & Roastery Hero",
+        category: "hero",
+        tags: ["hero", "coffee", "warm", "minimalist", "luxury"],
+        html: `<section class="min-h-[85vh] flex items-center bg-[#0c0a09] text-stone-100 px-6 py-24"><div class="max-w-5xl mx-auto text-center"><span class="text-amber-500 uppercase tracking-widest text-xs font-bold mb-4 block">Single Origin & Slow Bar</span><h1 class="text-5xl sm:text-7xl font-bold tracking-tight mb-6">Secangkir Cerita Dari <br><span class="text-amber-400">Petani Lokal Nusantara</span></h1><p class="text-stone-400 max-w-xl mx-auto mb-10 text-base">Dipanggang segar setiap minggu untuk menjaga karakter rasa asli.</p><div class="flex justify-center gap-4"><a href="#menu" class="px-8 py-3.5 rounded-xl bg-amber-600 hover:bg-amber-500 font-semibold text-white">Lihat Menu</a></div></div></section>`
+      },
+      {
+        id: "features-bento-grid",
+        name: "Modern Bento Grid Feature Cards",
+        category: "features",
+        tags: ["features", "bento", "grid", "cards"],
+        html: `<section id="features" class="py-24 px-6 bg-slate-950 text-white"><div class="max-w-6xl mx-auto"><div class="text-center max-w-2xl mx-auto mb-16"><h2 class="text-xs font-bold uppercase tracking-widest text-indigo-400 mb-2">Fitur Unggulan</h2><h3 class="text-3xl sm:text-4xl font-black">Ekosistem Desain Terintegrasi</h3></div><div class="grid grid-cols-1 md:grid-cols-3 gap-6"><div class="md:col-span-2 rounded-3xl bg-slate-900/60 border border-slate-800 p-8"><div class="text-2xl mb-4">⚡</div><h4 class="text-xl font-bold mb-2">Multi-Step Agentic</h4><p class="text-slate-400 text-sm">Alur kerja terstruktur mulai dari Planner, Retrieval, hingga Code Assembler.</p></div><div class="rounded-3xl bg-slate-900/60 border border-slate-800 p-8"><div class="text-2xl mb-4">👁️</div><h4 class="text-xl font-bold mb-2">Vision Dissector</h4><p class="text-slate-400 text-sm">Bedah screenshot referensi menjadi komponen Tailwind CSS otomatis.</p></div></div></div></section>`
+      },
+      {
+        id: "pricing-3-tiers",
+        name: "3-Tier SaaS Pricing Cards",
+        category: "pricing",
+        tags: ["pricing", "tiers", "subscription"],
+        html: `<section id="pricing" class="py-24 px-6 bg-slate-950 text-white"><div class="max-w-5xl mx-auto text-center mb-16"><h2 class="text-xs uppercase tracking-widest text-indigo-400 font-bold mb-2">Pilihan Paket</h2><h3 class="text-3xl font-black">Investasi Sesuai Kebutuhan</h3></div><div class="grid grid-cols-1 md:grid-cols-3 gap-6"><div class="p-8 rounded-3xl bg-slate-900/40 border border-slate-800"><h4 class="text-lg font-bold mb-2">Starter</h4><div class="text-3xl font-black mb-4">Rp 0</div><p class="text-slate-400 text-xs">Untuk eksplorasi awal.</p></div><div class="p-8 rounded-3xl bg-indigo-950/30 border-2 border-indigo-500 shadow-2xl relative"><div class="text-xs font-bold text-indigo-300 uppercase mb-2">Paling Populer</div><h4 class="text-lg font-bold mb-2">Pro Studio</h4><div class="text-3xl font-black mb-4">Rp 199K</div><p class="text-slate-400 text-xs">Fitur terlengkap tanpa batas.</p></div><div class="p-8 rounded-3xl bg-slate-900/40 border border-slate-800"><h4 class="text-lg font-bold mb-2">Enterprise</h4><div class="text-3xl font-black mb-4">Custom</div><p class="text-slate-400 text-xs">Dedicated untuk agensi.</p></div></div></section>`
+      },
+      {
+        id: "footer-modern",
+        name: "Modern Minimalist Multi-Column Footer",
+        category: "footer",
+        tags: ["footer", "links", "copyright"],
+        html: `<footer class="py-16 px-6 bg-slate-950 border-t border-slate-900 text-slate-400 text-xs"><div class="max-w-6xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4"><div>© 2026 UI Maker. Hak cipta dilindungi.</div><div class="flex gap-6"><a href="#" class="hover:text-white">Privasi</a><a href="#" class="hover:text-white">Syarat</a><a href="#" class="hover:text-white">Kontak</a></div></div></footer>`
+      }
+    ];
 
     document.addEventListener("DOMContentLoaded", function() {
       checkApiKeyBadge();
       loadDefaultCanvas();
-
-      document.getElementById("promptInput").addEventListener("keydown", function(e) {
-        if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
-          generateWebsite();
-        }
-      });
+      initComponentDatabase();
     });
 
-    // --- API Key Management ---
+    // ==========================================================================
+    // API KEY MANAGEMENT
+    // ==========================================================================
     function getStoredApiKey() {
       return localStorage.getItem("GEMINI_API_KEY") || "";
     }
@@ -356,22 +556,189 @@
       showToast("API Key berhasil disimpan!", "success");
     }
 
-    function setPromptPreset(text) {
-      document.getElementById("promptInput").value = text;
-      document.getElementById("promptInput").focus();
+    // ==========================================================================
+    // MODAL PANDUAN CARA PAKAI
+    // ==========================================================================
+    function openGuideModal() {
+      document.getElementById("guideModal").classList.remove("hidden");
     }
 
-    // --- Image Attachment for Vision ---
-    function handleImageAttach(event) {
-      const file = event.target.files[0];
+    function closeGuideModal() {
+      document.getElementById("guideModal").classList.add("hidden");
+    }
+
+    // ==========================================================================
+    // MODAL DATABASE KOMPONEN (VIEW & ADD DATA)
+    // ==========================================================================
+    function getComponentsFromStorage() {
+      const stored = localStorage.getItem("CUSTOM_COMPONENTS");
+      if (stored) {
+        try {
+          return JSON.parse(stored);
+        } catch (e) {
+          return DEFAULT_COMPONENTS;
+        }
+      }
+      return DEFAULT_COMPONENTS;
+    }
+
+    function saveComponentsToStorage(comps) {
+      localStorage.setItem("CUSTOM_COMPONENTS", JSON.stringify(comps));
+    }
+
+    function initComponentDatabase() {
+      if (!localStorage.getItem("CUSTOM_COMPONENTS")) {
+        saveComponentsToStorage(DEFAULT_COMPONENTS);
+      }
+    }
+
+    function openDatabaseModal() {
+      document.getElementById("databaseModal").classList.remove("hidden");
+      renderComponentsList(getComponentsFromStorage());
+    }
+
+    function closeDatabaseModal() {
+      document.getElementById("databaseModal").classList.add("hidden");
+      document.getElementById("addComponentForm").classList.add("hidden");
+    }
+
+    function toggleAddComponentForm() {
+      const form = document.getElementById("addComponentForm");
+      form.classList.toggle("hidden");
+    }
+
+    function saveNewComponentToDb() {
+      const name = document.getElementById("newCompName").value.trim();
+      const cat = document.getElementById("newCompCategory").value;
+      const tagsStr = document.getElementById("newCompTags").value.trim();
+      const html = document.getElementById("newCompHtml").value.trim();
+
+      if (!name || !html) {
+        showToast("Nama dan Kode HTML komponen wajib diisi!", "warning");
+        return;
+      }
+
+      const tags = tagsStr ? tagsStr.split(",").map(t => t.trim().toLowerCase()) : [cat];
+      const newComp = {
+        id: "comp-" + Date.now(),
+        name: name,
+        category: cat,
+        tags: tags,
+        html: html
+      };
+
+      const current = getComponentsFromStorage();
+      current.unshift(newComp);
+      saveComponentsToStorage(current);
+
+      // Reset form
+      document.getElementById("newCompName").value = "";
+      document.getElementById("newCompTags").value = "";
+      document.getElementById("newCompHtml").value = "";
+      toggleAddComponentForm();
+
+      renderComponentsList(current);
+      showToast("Komponen baru berhasil disimpan ke database!", "success");
+    }
+
+    function renderComponentsList(list) {
+      const container = document.getElementById("componentsCatalogList");
+      container.innerHTML = "";
+
+      if (!list || list.length === 0) {
+        container.innerHTML = `<div class="p-6 text-center text-zinc-500 text-xs">Belum ada komponen di database.</div>`;
+        return;
+      }
+
+      list.forEach((c, idx) => {
+        const item = document.createElement("div");
+        item.className = "p-3.5 rounded-xl bg-black/60 border border-white/[0.06] hover:border-white/[0.15] transition-all flex items-center justify-between";
+        item.innerHTML = `
+          <div>
+            <div class="font-bold text-white text-xs mb-0.5">${c.name}</div>
+            <div class="flex items-center gap-2 text-[10px]">
+              <span class="px-2 py-0.5 rounded bg-indigo-950 text-indigo-300 font-mono">${c.category}</span>
+              <span class="text-zinc-500">${(c.tags || []).join(", ")}</span>
+            </div>
+          </div>
+          <button onclick="previewComponentInCanvas('${c.id}')" class="px-2.5 py-1 rounded-lg bg-white/[0.06] hover:bg-indigo-600 text-zinc-300 hover:text-white text-[11px] font-medium transition-colors">
+            Preview
+          </button>
+        `;
+        container.appendChild(item);
+      });
+    }
+
+    function filterComponentsList() {
+      const q = document.getElementById("dbSearchInput").value.toLowerCase().trim();
+      const all = getComponentsFromStorage();
+      if (!q) {
+        renderComponentsList(all);
+        return;
+      }
+      const filtered = all.filter(c => 
+        c.name.toLowerCase().includes(q) || 
+        c.category.toLowerCase().includes(q) || 
+        (c.tags || []).some(t => t.includes(q))
+      );
+      renderComponentsList(filtered);
+    }
+
+    function previewComponentInCanvas(id) {
+      const all = getComponentsFromStorage();
+      const comp = all.find(c => c.id === id);
+      if (!comp) return;
+
+      const fullDoc = `<!DOCTYPE html><html lang="id"><head><meta charset="UTF-8"><script src="https://cdn.tailwindcss.com"><\/script><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet"></head><body class="min-h-screen bg-slate-950 text-white flex items-center justify-center p-6 font-['Plus_Jakarta_Sans']">${comp.html}</body></html>`;
+      renderIframe(fullDoc);
+      closeDatabaseModal();
+      showToast(`Pratinjau komponen: ${comp.name}`, "info");
+    }
+
+    // ==========================================================================
+    // SAMPEL CHAT KLIEN
+    // ==========================================================================
+    function loadSampleChat(type) {
+      const txt = document.getElementById("clientChatInput");
+      if (type === 'coffee') {
+        txt.value = `Klien: "Halo mas, tolong buatkan website untuk Coffee Shop & Roastery saya namanya 'Aroma Nusantara'.
+Saya mau tampilannya bernuansa hangat, elegan, dan estetik (dark warm wood).
+Fitur yang wajib ada:
+1. Cerita kopi single origin dari petani binaan di Aceh & Toraja.
+2. Menu minuman signature (Es Kopi Susu Gula Aren, Manual Brew V60, Cold Brew).
+3. Ulasan pelanggan dan foto suasana cafe.
+4. Tombol order langsung terhubung ke WhatsApp barista kami."`;
+      } else if (type === 'saas') {
+        txt.value = `Klien: "Siang mas, kita butuh landing page modern untuk SaaS AI meeting notes kami 'NoteGen AI'.
+Target audiensnya para founder, project manager, dan corporate team.
+Mau gayanya dark mode mewah seperti Linear / Vercel dengan aksen gradien ungu-indigo.
+Perlu ada:
+- Hero section dengan demo visual ringkasan rapat
+- Bento grid 4 keunggulan utama (otomatis transkrip, action items, integrasi Zoom/Meet, enkripsi data)
+- Tabel harga 3 paket (Free, Pro $19/bln, Enterprise)
+- FAQ dan footer lengkap."`;
+      } else {
+        txt.value = `Klien: "Selamat pagi, kami dari Kantor Advokat & Konsultan Hukum 'Pratama & Partners'.
+Kami butuh website profil firma hukum yang berwibawa, kredibel, dan profesional (nuansa navy gelap dan aksen emas).
+Halaman harus menampilkan:
+- Profil spesialisasi (Hukum Korporasi, Litigasi, Pajak, dan HKI)
+- Rekam jejak kemenangan kasus (stats 98% keberhasilan, 500+ klien)
+- Profil partner dan lawyer kami
+- Form konsultasi hukum rahasia."`;
+      }
+      showToast("Sampel chat klien dimasukkan!", "info");
+    }
+
+    function handleImageAttachment(e) {
+      const file = e.target.files[0];
       if (!file) return;
       attachedImageMime = file.type;
       const reader = new FileReader();
-      reader.onload = function(e) {
-        attachedImageBase64 = e.target.result;
-        document.getElementById("attachedImageName").innerText = file.name;
+      reader.onload = function(evt) {
+        attachedImageBase64 = evt.target.result;
+        document.getElementById("attachedImageLabel").innerText = file.name;
         document.getElementById("clearImageBtn").classList.remove("hidden");
-        showToast("Screenshot UI siap dianalisis!", "success");
+        showToast("Screenshot UI siap disertakan!", "success");
       };
       reader.readAsDataURL(file);
     }
@@ -379,55 +746,230 @@
     function clearAttachedImage() {
       attachedImageBase64 = null;
       document.getElementById("imageUploadInput").value = "";
-      document.getElementById("attachedImageName").innerText = "Screenshot UI";
+      document.getElementById("attachedImageLabel").innerText = "Screenshot UI";
       document.getElementById("clearImageBtn").classList.add("hidden");
     }
 
-    // --- GENERATION ENGINE (Direct REST API Gemini 2.5 Flash) ---
-    async function generateWebsite() {
-      const prompt = document.getElementById("promptInput").value.trim();
-      if (!prompt) {
-        showToast("Tuliskan deskripsi website terlebih dahulu.", "warning");
+    // ==========================================================================
+    // ALUR TAHAP 1 -> TAHAP 2 (ANALISIS CHAT & BIKIN PILIHAN BERTINGKAT)
+    // ==========================================================================
+    async function analyzeClientChat() {
+      const chat = document.getElementById("clientChatInput").value.trim();
+      if (!chat) {
+        showToast("Silakan tempelkan riwayat chat klien terlebih dahulu.", "warning");
         return;
       }
 
       const apiKey = getStoredApiKey();
       if (!apiKey) {
         openApiKeyModal();
-        showToast("Harap masukkan Gemini API Key terlebih dahulu.", "warning");
+        showToast("Masukkan Gemini API Key terlebih dahulu.", "warning");
         return;
       }
 
-      setLoading(true, "Meracik Website...", "Menghubungi Gemini 2.5 Flash API...");
-      showStatusProgress(true, "Langkah 1/2", "Menganalisis kebutuhan layout...");
+      const model = document.getElementById("modelSelector").value;
+      setLeftLoader(true, "AI Sedang Menganalisis Chat Klien...", "Mengekstrak maksud & menyusun pilihan ganda bertingkat...");
+
+      const systemPrompt = `Anda adalah Senior UX/UI Director kelas dunia.
+Tugas Anda adalah membedah riwayat chat klien yang tidak terstruktur, memahami bisnisnya, lalu membuat formulir PILIHAN GANDA BERTINGKAT (Multiple Choice Questionnaire) yang cerdas dan relevan agar desainer dapat memilih konfigurasi terbaik.
+
+Keluarkan respon HANYA berupa JSON valid tanpa markdown dengan struktur persis seperti ini:
+{
+  "businessSummary": "Ringkasan 1-2 kalimat tentang bisnis klien, target persona, dan kebutuhan intinya.",
+  "questions": [
+    {
+      "id": "vibe",
+      "title": "Gaya Visual & Nuansa (Design Tone)",
+      "options": [
+        { "id": "v1", "label": "Nama Gaya 1", "description": "Penjelasan singkat nuansa dan kesannya." },
+        { "id": "v2", "label": "Nama Gaya 2", "description": "Penjelasan singkat nuansa dan kesannya." },
+        { "id": "v3", "label": "Nama Gaya 3", "description": "Penjelasan singkat nuansa dan kesannya." }
+      ]
+    },
+    {
+      "id": "layout",
+      "title": "Hierarki Susunan Halaman (Section Flow)",
+      "options": [
+        { "id": "l1", "label": "Struktur Alur A", "description": "Urutan section (misal: Hero -> Bento Grid -> Pricing -> FAQ)." },
+        { "id": "l2", "label": "Struktur Alur B", "description": "Urutan section alternatif." }
+      ]
+    },
+    {
+      "id": "color",
+      "title": "Palet Warna & Mood Utama",
+      "options": [
+        { "id": "c1", "label": "Nama Palet 1", "description": "Kombinasi warna (misal: Dark Obsidian dengan Aksen Indigo Glow)." },
+        { "id": "c2", "label": "Nama Palet 2", "description": "Kombinasi warna alternatif." }
+      ]
+    },
+    {
+      "id": "cta",
+      "title": "Fokus Call To Action (CTA)",
+      "options": [
+        { "id": "cta1", "label": "Fokus CTA 1", "description": "Misal: Tombol WhatsApp Barista Langsung." },
+        { "id": "cta2", "label": "Fokus CTA 2", "description": "Misal: Formulir Pendaftaran / Booking Online." }
+      ]
+    }
+  ]
+}`;
 
       try {
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${encodeURIComponent(apiKey)}`;
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(apiKey)}`;
         
-        const systemPrompt = `Anda adalah Lead Web Architect dunia.
-Buatkan dokumen HTML5 LENGKAP dan MANDIRI (Self-Contained) berbasis Tailwind CSS yang siap digunakan langsung di Google Apps Script (HtmlService).
+        let userParts = [{ text: `Berikut percakapan chat dari klien saya:\n"""\n${chat}\n"""\n\nPahami sistem dan bisnisnya, lalu buatkan JSON formulir pilihan ganda bertingkat.` }];
 
-ATURAN DESAIN:
-1. Mulai dengan <!DOCTYPE html> sampai </html>.
-2. Di bagian <head>, sertakan CDN Tailwind: <script src="https://cdn.tailwindcss.com"><\/script> dan Google Fonts (Plus Jakarta Sans atau Inter).
-3. Buat desain yang sangat modern, bersih, elegan (dark mode mewah, aksen gradien halus, card hover effect, tipografi kontras tinggi, navigasi responsif, hero section, fitur/bento grid, pricing/solusi, dan footer).
-4. Gunakan copywriting bisnis nyata dan relevan (DILARANG menggunakan Lorem Ipsum).
-5. HANYA keluarkan kode HTML mentah tanpa blok markdown (\`\`\`html atau \`\`\`).`;
-
-        let userParts = [{ text: `Permintaan Klien:\n"${prompt}"\n\nRakit kode HTML5 lengkap dan responsif dengan Tailwind CSS.` }];
-        
         if (attachedImageBase64) {
-          const cleanBase = attachedImageBase64.split(",")[1];
           userParts.push({
             inline_data: {
               mime_type: attachedImageMime,
-              data: cleanBase
+              data: attachedImageBase64.split(",")[1]
             }
           });
-          userParts[0].text += `\n(Gunakan juga screenshot referensi yang dilampirkan sebagai inspirasi tata letak dan palet warna).`;
         }
 
-        showStatusProgress(true, "Langkah 2/2", "Menyusun kode HTML & Tailwind CSS...");
+        const response = await fetch(url, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            contents: [{ role: "user", parts: userParts }],
+            systemInstruction: { parts: [{ text: systemPrompt }] },
+            generationConfig: { temperature: 0.2, responseMimeType: "application/json" }
+          })
+        });
+
+        const data = await response.json();
+        setLeftLoader(false);
+
+        if (data.error) throw new Error(data.error.message);
+
+        const resultJson = JSON.parse(data.candidates[0].content.parts[0].text);
+        analyzedClientContext = {
+          rawChat: chat,
+          analysis: resultJson
+        };
+
+        renderQuestionnaire(resultJson);
+        showToast("Analisis chat berhasil! Silakan pilih opsi desain di bawah.", "success");
+      } catch (err) {
+        setLeftLoader(false);
+        console.error(err);
+        showToast("Gagal menganalisis chat: " + err.message, "error");
+      }
+    }
+
+    function renderQuestionnaire(data) {
+      document.getElementById("stage1Container").classList.add("hidden");
+      document.getElementById("stage2Container").classList.remove("hidden");
+
+      document.getElementById("analysisSummaryText").innerText = data.businessSummary || "Analisis kebutuhan klien berhasil dipetakan.";
+
+      const wrapper = document.getElementById("questionnaireWrapper");
+      wrapper.innerHTML = "";
+
+      (data.questions || []).forEach((q, qIdx) => {
+        const qBox = document.createElement("div");
+        qBox.className = "space-y-2";
+        qBox.innerHTML = `
+          <div class="text-xs font-bold text-white flex items-center gap-1.5">
+            <span class="w-4 h-4 rounded-full bg-white/10 text-[10px] flex items-center justify-center font-mono">${qIdx + 1}</span>
+            <span>${q.title}</span>
+          </div>
+          <div class="space-y-1.5" id="optionsGroup_${q.id}"></div>
+        `;
+
+        const optContainer = qBox.querySelector(`#optionsGroup_${q.id}`);
+        (q.options || []).forEach((opt, optIdx) => {
+          const isChecked = optIdx === 0 ? "checked" : "";
+          const card = document.createElement("label");
+          card.className = "option-card flex items-start gap-3 p-3 rounded-xl bg-zinc-900/60 border border-white/[0.08] hover:border-white/[0.18] cursor-pointer transition-all";
+          card.innerHTML = `
+            <div class="pt-0.5 shrink-0">
+              <input type="radio" name="${q.id}" value="${opt.label}: ${opt.description}" class="hidden" ${isChecked}>
+              <div class="indicator-dot w-3.5 h-3.5 rounded-full border border-zinc-600 bg-zinc-800 transition-all"></div>
+            </div>
+            <div>
+              <div class="text-xs font-semibold text-white mb-0.5">${opt.label}</div>
+              <div class="text-[11px] text-zinc-400 leading-relaxed">${opt.description}</div>
+            </div>
+          `;
+          optContainer.appendChild(card);
+        });
+
+        wrapper.appendChild(qBox);
+      });
+    }
+
+    function resetToStage1() {
+      document.getElementById("stage2Container").classList.add("hidden");
+      document.getElementById("stage1Container").classList.remove("hidden");
+    }
+
+    // ==========================================================================
+    // ALUR TAHAP 2 -> TAHAP 4 (RACIK DESAIN BERDASARKAN PILIHAN USER)
+    // ==========================================================================
+    async function generateFinalDesignFromChoices() {
+      if (!analyzedClientContext) return;
+
+      const apiKey = getStoredApiKey();
+      if (!apiKey) { openApiKeyModal(); return; }
+
+      // Kumpulkan semua opsi yang dipilih user
+      const selectedChoices = [];
+      const questions = analyzedClientContext.analysis.questions || [];
+      questions.forEach(q => {
+        const checked = document.querySelector(`input[name="${q.id}"]:checked`);
+        if (checked) {
+          selectedChoices.push(`- ${q.title}: ${checked.value}`);
+        }
+      });
+
+      // Ambil database komponen lokal sebagai referensi
+      const componentDb = getComponentsFromStorage();
+      const componentContext = componentDb.map((c, i) => `[Komponen ${i+1}: ${c.category}] (Nama: ${c.name})\n${c.html}`).join("\n\n");
+
+      setCanvasLoader(true, "Meracik Website...", "Gemini AI sedang merakit kode HTML & Tailwind CSS sesuai pilihan Anda...");
+
+      const model = document.getElementById("modelSelector").value;
+
+      const systemPrompt = `Anda adalah Master Frontend Engineer yang ahli dalam meracik antarmuka web modern dengan Tailwind CSS & Google Apps Script (HtmlService).
+
+Tugas Anda adalah merakit satu dokumen HTML5 LENGKAP, MANDIRI (Self-Contained), dan responsif penuh berdasarkan riwayat chat klien dan PILIHAN KONFIGURASI yang dipilih pengguna.
+
+PANDUAN DESAIN WAJIB:
+1. Mulai dengan <!DOCTYPE html> sampai </html>.
+2. Di bagian <head>, sertakan CDN Tailwind: <script src="https://cdn.tailwindcss.com"><\/script> dan Google Fonts (Plus Jakarta Sans atau Inter).
+3. Terapkan secara presisi pilihan pengguna (Gaya visual, susunan section, skema warna, dan CTA).
+4. Buat copywriting bisnis yang NYATA, menggugah selera/kredibel, dan selaras dengan bisnis klien (DILARANG KERAS menggunakan teks placeholder seperti "Lorem Ipsum").
+5. Format kompatibel penuh saat disalin ke Google Apps Script HtmlService.
+6. HANYA keluarkan kode HTML mentah tanpa bungkus blok markdown (\`\`\`html).`;
+
+      const userText = `
+RIWAYAT CHAT KLIEN ASLI:
+"""
+${analyzedClientContext.rawChat}
+"""
+
+PILIHAN DESAIN YANG DIPILIH PENGGUNA:
+${selectedChoices.join("\n")}
+
+DATABASE KOMPONEN TERSEDIA (GUNAKAN SEBAGAI REFERENSI TATA LETAK):
+${componentContext}
+
+INSTRUKSI:
+Rakit kode website HTML5 utuh dan responsif yang mengimplementasikan semua pilihan di atas!`;
+
+      try {
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(apiKey)}`;
+        
+        let userParts = [{ text: userText }];
+        if (attachedImageBase64) {
+          userParts.push({
+            inline_data: {
+              mime_type: attachedImageMime,
+              data: attachedImageBase64.split(",")[1]
+            }
+          });
+        }
 
         const response = await fetch(url, {
           method: "POST",
@@ -440,12 +982,9 @@ ATURAN DESAIN:
         });
 
         const data = await response.json();
-        setLoading(false);
-        showStatusProgress(false);
+        setCanvasLoader(false);
 
-        if (data.error) {
-          throw new Error(data.error.message);
-        }
+        if (data.error) throw new Error(data.error.message);
 
         let rawHtml = data.candidates[0].content.parts[0].text;
         let cleanHtml = rawHtml.replace(/^```html\s*/i, "").replace(/^```\s*/i, "").replace(/\s*```$/i, "").trim();
@@ -454,46 +993,28 @@ ATURAN DESAIN:
         renderIframe(generatedHtml);
         document.getElementById("codeViewDisplay").innerText = generatedHtml;
 
-        showToast("Website berhasil diracik!", "success");
+        showToast("Website berhasil diracik sesuai pilihan Anda!", "success");
       } catch (err) {
-        setLoading(false);
-        showStatusProgress(false);
+        setCanvasLoader(false);
         console.error(err);
-        showToast("Gagal: " + err.message, "error");
+        showToast("Gagal meracik desain: " + err.message, "error");
       }
     }
 
+    // ==========================================================================
+    // CANVAS CONTROLS & EXPORT
+    // ==========================================================================
     function renderIframe(htmlCode) {
       document.getElementById("previewIframe").srcdoc = htmlCode;
     }
 
     function loadDefaultCanvas() {
-      const welcome = `<!DOCTYPE html>
-<html lang="id" class="h-full bg-[#090a0f] text-white">
-<head>
-  <meta charset="UTF-8">
-  <script src="https://cdn.tailwindcss.com"><\/script>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
-</head>
-<body class="min-h-screen bg-[#090a0f] flex flex-col items-center justify-center p-6 text-center font-['Plus_Jakarta_Sans'] relative">
-  <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-indigo-500 to-purple-600 flex items-center justify-center text-white text-3xl font-bold mb-6 shadow-xl shadow-indigo-500/20">
-    ✦
-  </div>
-  <h2 class="text-3xl sm:text-4xl font-extrabold mb-3 tracking-tight">AI UI/UX Architect Generator</h2>
-  <p class="text-sm text-zinc-400 max-w-md mb-8 leading-relaxed">
-    Tuliskan deskripsi website di kolom kiri atau klik salah satu pilihan cepat. Hasil kode siap pakai untuk Google Apps Script akan langsung tampil di sini.
-  </p>
-  <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-zinc-900 border border-white/[0.08] text-xs text-indigo-400 font-mono">
-    Siap Menerima Perintah 🚀
-  </div>
-</body>
-</html>`;
+      const welcome = `<!DOCTYPE html><html lang="id" class="h-full bg-[#090a0f] text-white"><head><meta charset="UTF-8"><script src="https://cdn.tailwindcss.com"><\/script><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet"></head><body class="min-h-screen bg-[#090a0f] flex flex-col items-center justify-center p-6 text-center font-['Plus_Jakarta_Sans'] relative"><div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-indigo-500 to-purple-600 flex items-center justify-center text-white text-3xl font-bold mb-6 shadow-xl shadow-indigo-500/20">✦</div><h2 class="text-3xl sm:text-4xl font-extrabold mb-3 tracking-tight">AI UI/UX Architect Generator</h2><p class="text-sm text-zinc-400 max-w-md mb-8 leading-relaxed">Tempelkan riwayat chat klien di kolom kiri, jawab pilihan ganda bertingkat yang disiapkan AI, dan hasil website siap pakai untuk Google Apps Script akan langsung tayang di sini.</p><div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-zinc-900 border border-white/[0.08] text-xs text-indigo-400 font-mono">Siap Menerima Chat Klien 🚀</div></body></html>`;
       generatedHtml = welcome;
       renderIframe(welcome);
       document.getElementById("codeViewDisplay").innerText = welcome;
     }
 
-    // --- View Toggle & Actions ---
     function switchCanvasView(mode) {
       const bPrev = document.getElementById("viewTabPreview");
       const bCode = document.getElementById("viewTabCode");
@@ -525,7 +1046,9 @@ ATURAN DESAIN:
       window.open(url, "_blank");
     }
 
-    // --- Export GAS Modal ---
+    // ==========================================================================
+    // EXPORT GAS MODAL
+    // ==========================================================================
     function openExportModal() {
       activeModalTab = "index";
       document.getElementById("gasModal").classList.remove("hidden");
@@ -592,29 +1115,28 @@ function include(filename) {
       showToast("File Index.html terunduh!", "success");
     }
 
-    // --- Utility UI ---
-    function setLoading(isLoading, title, subtitle) {
-      const overlay = document.getElementById("loadingOverlay");
-      const btn = document.getElementById("btnGenerate");
-      if (isLoading) {
-        overlay.classList.remove("hidden");
-        btn.disabled = true;
-        if (title) document.getElementById("loadingTitle").innerText = title;
-        if (subtitle) document.getElementById("loadingSubtitle").innerText = subtitle;
+    // ==========================================================================
+    // UTILITY UI LOADER & TOAST
+    // ==========================================================================
+    function setLeftLoader(show, title, subtitle) {
+      const box = document.getElementById("leftPanelLoader");
+      if (show) {
+        box.classList.remove("hidden");
+        document.getElementById("loaderTitle").innerText = title;
+        document.getElementById("loaderSubtitle").innerText = subtitle;
       } else {
-        overlay.classList.add("hidden");
-        btn.disabled = false;
+        box.classList.add("hidden");
       }
     }
 
-    function showStatusProgress(show, step, detail) {
-      const box = document.getElementById("statusIndicatorBox");
+    function setCanvasLoader(show, title, subtitle) {
+      const overlay = document.getElementById("canvasLoader");
       if (show) {
-        box.classList.remove("hidden");
-        document.getElementById("stepProgressText").innerText = step;
-        document.getElementById("stepDetailText").innerText = detail;
+        overlay.classList.remove("hidden");
+        document.getElementById("canvasLoaderTitle").innerText = title;
+        document.getElementById("canvasLoaderSubtitle").innerText = subtitle;
       } else {
-        box.classList.add("hidden");
+        overlay.classList.add("hidden");
       }
     }
 
