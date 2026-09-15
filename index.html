@@ -242,7 +242,7 @@
               <span class="text-xs font-bold text-slate-800">Brief &amp; Lampiran Klien</span>
             </div>
             <div class="flex items-center gap-1.5">
-              <span id="accordionBadgeHint" class="text-[10px] font-medium text-emerald-700 bg-emerald-100/80 px-2 py-0.5 rounded-full">Kopi Senja</span>
+              <span id="accordionBadgeHint" class="text-[10px] font-medium text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full">Kosong</span>
               <span id="accordionChevron" class="material-symbols-outlined text-[17px] text-slate-400 group-hover:text-slate-700 transition-transform duration-200">expand_less</span>
             </div>
           </button>
@@ -258,7 +258,7 @@
                 </div>
                 <div class="min-w-0">
                   <span class="text-xs font-bold text-slate-800 block truncate">Salin Chat Klien</span>
-                  <span id="chatStatusSubtitle" class="text-[10px] text-slate-500 font-medium truncate block">✓ Brief Kopi Senja Terisi</span>
+                  <span id="chatStatusSubtitle" class="text-[10px] text-slate-400 font-medium truncate block">Belum ada chat klien</span>
                 </div>
               </div>
               <span class="material-symbols-outlined text-[16px] text-slate-400 group-hover:text-primary group-hover:translate-x-0.5 transition-transform shrink-0">chevron_right</span>
@@ -287,16 +287,7 @@
 
               <!-- Mini Square Thumbnails List -->
               <div id="attachmentThumbnailContainer" class="flex flex-wrap gap-2 pt-0.5">
-                <!-- Sample Square Thumbnail 1 -->
-                <div class="relative w-11 h-11 rounded-xl border border-slate-200/80 overflow-hidden group cursor-pointer shadow-2xs bg-white">
-                  <img src="https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=200&auto=format&fit=crop&q=80" onclick="openLightbox('https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=1000&auto=format&fit=crop&q=80', 'Foto Kafe')" class="w-full h-full object-cover group-hover:scale-110 transition-transform" title="Klik untuk memperbesar"/>
-                  <button onclick="this.parentElement.remove()" class="absolute top-0.5 right-0.5 w-3.5 h-3.5 rounded-full bg-slate-900/80 hover:bg-red-500 text-white text-[9px] flex items-center justify-center shadow transition-colors" title="Hapus">✕</button>
-                </div>
-                <!-- Sample Square Thumbnail 2 -->
-                <div class="relative w-11 h-11 rounded-xl border border-slate-200/80 overflow-hidden group cursor-pointer shadow-2xs bg-white">
-                  <img src="https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?w=200&auto=format&fit=crop&q=80" onclick="openLightbox('https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?w=1000&auto=format&fit=crop&q=80', 'Wireframe')" class="w-full h-full object-cover group-hover:scale-110 transition-transform" title="Klik untuk memperbesar"/>
-                  <button onclick="this.parentElement.remove()" class="absolute top-0.5 right-0.5 w-3.5 h-3.5 rounded-full bg-slate-900/80 hover:bg-red-500 text-white text-[9px] flex items-center justify-center shadow transition-colors" title="Hapus">✕</button>
-                </div>
+                <span class="text-[11px] text-slate-400 italic">Belum ada lampiran diunggah</span>
               </div>
             </div>
 
@@ -306,7 +297,7 @@
                 <span class="material-symbols-outlined text-[15px] text-secondary">smart_toy</span>
                 <span class="text-[10px] font-bold text-slate-700">Tipe Terdeteksi AI:</span>
               </div>
-              <span id="detectedArchetypeBadge" class="text-[10px] font-bold text-primary bg-primary/10 px-2 py-0.5 rounded-full">F&amp;B / Landing Page</span>
+              <span id="detectedArchetypeBadge" class="text-[10px] font-bold text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full">-</span>
             </div>
 
           </div>
@@ -353,7 +344,7 @@
           <div class="flex-1 max-w-md bg-white border border-slate-200 rounded-lg px-3 py-1 flex items-center justify-between shadow-2xs">
             <div class="flex items-center gap-1.5 truncate">
               <span class="material-symbols-outlined text-[13px] text-secondary">lock</span>
-              <span id="canvasPreviewUrl" class="text-[11px] font-mono text-slate-700 truncate">https://preview.uiuxmaker.cloud/kopi-senja-roastery</span>
+              <span id="canvasPreviewUrl" class="text-[11px] font-mono text-slate-700 truncate">https://preview.uiuxmaker.cloud/</span>
             </div>
             <button onclick="copyPreviewUrl()" class="text-slate-400 hover:text-primary shrink-0 ml-1" title="Salin URL">
               <span class="material-symbols-outlined text-[14px]">content_copy</span>
@@ -487,18 +478,9 @@
 
           <!-- Multi-Photo Strip (Square Thumbnails to switch preview one by one) -->
           <div class="flex flex-col gap-1.5 mt-1">
-            <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Foto Terunggah (<span id="scannerPhotoCount">2</span>)</span>
+            <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Foto Terunggah (<span id="scannerPhotoCount">0 Foto</span>)</span>
             <div id="scannerThumbnailStrip" class="flex flex-wrap gap-2 pt-0.5">
-              <!-- Item 1 (Active) -->
-              <div onclick="selectScannerActivePhoto(0)" id="scanThumb-0" class="relative w-12 h-12 rounded-xl border-2 border-primary overflow-hidden group cursor-pointer shadow-xs">
-                <img src="https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?w=200&auto=format&fit=crop&q=80" class="w-full h-full object-cover"/>
-                <button onclick="removeScannerPhoto(0, event)" class="absolute top-0.5 right-0.5 w-3.5 h-3.5 rounded-full bg-red-500 text-white text-[9px] flex items-center justify-center shadow">✕</button>
-              </div>
-              <!-- Item 2 -->
-              <div onclick="selectScannerActivePhoto(1)" id="scanThumb-1" class="relative w-12 h-12 rounded-xl border border-slate-200 overflow-hidden group cursor-pointer shadow-xs opacity-75 hover:opacity-100">
-                <img src="https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=200&auto=format&fit=crop&q=80" class="w-full h-full object-cover"/>
-                <button onclick="removeScannerPhoto(1, event)" class="absolute top-0.5 right-0.5 w-3.5 h-3.5 rounded-full bg-red-500 text-white text-[9px] flex items-center justify-center shadow">✕</button>
-              </div>
+              <span class="text-[11px] text-slate-400 italic">Belum ada foto yang diunggah/ditempel</span>
             </div>
           </div>
         </div>
@@ -531,7 +513,7 @@
         <div class="h-12 bg-slate-50 border-b border-slate-200 px-4 sm:px-6 flex items-center justify-between shrink-0">
           <div class="flex items-center gap-2.5">
             <span class="material-symbols-outlined text-primary text-[19px]">preview</span>
-            <span class="text-xs font-bold text-slate-800" id="scannerCanvasTitle">Pratinjau Foto 1 / 2</span>
+            <span class="text-xs font-bold text-slate-800" id="scannerCanvasTitle">Belum Ada Foto</span>
             <span class="text-[10px] font-mono text-slate-400 hidden sm:inline">1920x1080 · High Res</span>
           </div>
 
@@ -544,15 +526,36 @@
             <button onclick="openDetectedComponentsModal()" class="px-3 py-1.5 rounded-xl bg-primary text-white text-xs font-bold flex items-center gap-1.5 shadow-sm hover:opacity-90 active:scale-95 transition-all">
               <span class="material-symbols-outlined text-[16px]">extension</span>
               <span>Hasil Bedah Komponen</span>
-              <span id="detectedCountPill" class="ml-1 px-1.5 py-0.2 rounded-full bg-white/20 text-white font-mono text-[10px]">6</span>
+              <span id="detectedCountPill" class="ml-1 px-1.5 py-0.2 rounded-full bg-white/20 text-white font-mono text-[10px]">0</span>
             </button>
           </div>
         </div>
 
         <!-- Real Image Canvas with Spacious Framing & Laser Scan Line -->
         <div class="flex-1 min-h-0 bg-slate-950 p-6 sm:p-8 relative overflow-hidden flex items-center justify-center">
-          <img id="scannerPreviewImage" src="https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?w=1200&auto=format&fit=crop&q=80" alt="Scanner Blueprint" class="max-w-full max-h-full object-contain rounded-2xl shadow-2xl border border-slate-800"/>
+          <img id="scannerPreviewImage" src="" alt="Scanner Blueprint" class="max-w-full max-h-full object-contain rounded-2xl shadow-2xl border border-slate-800 hidden"/>
           
+          <!-- Empty State when no photos in scanner -->
+          <div id="scannerEmptyState" class="flex flex-col items-center justify-center text-center p-8 max-w-sm">
+            <div class="w-16 h-16 rounded-2xl bg-slate-900 border border-slate-800 text-slate-500 flex items-center justify-center mb-3">
+              <span class="material-symbols-outlined text-[32px]">biotech</span>
+            </div>
+            <h3 class="text-sm font-bold text-slate-200 mb-1">Kanvas Scanner Kosong</h3>
+            <p class="text-xs text-slate-400 leading-relaxed mb-4">
+              Unggah gambar desain website, mockup, atau screenshot referensi untuk dibedah komponen visualnya oleh Gemini Flash 3.6.
+            </p>
+            <div class="flex items-center gap-2">
+              <button onclick="document.getElementById('scannerFileInput').click()" class="px-3.5 py-1.5 rounded-xl bg-secondary hover:bg-teal-600 text-white font-bold text-xs flex items-center gap-1.5 shadow-md transition-all">
+                <span class="material-symbols-outlined text-[16px]">upload</span>
+                <span>Unggah Foto</span>
+              </button>
+              <button onclick="pasteFromClipboard()" class="px-3.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs flex items-center gap-1.5 border border-slate-700 transition-all">
+                <span class="material-symbols-outlined text-[16px]">content_paste</span>
+                <span>Paste (Ctrl+V)</span>
+              </button>
+            </div>
+          </div>
+
           <!-- Animated Clean Laser Beam Line -->
           <div id="scannerLaser" class="hidden absolute left-0 right-0 h-1.5 bg-gradient-to-r from-transparent via-cyan-400 to-transparent shadow-[0_0_25px_#22d3ee] animate-laser pointer-events-none"></div>
 
@@ -784,7 +787,7 @@
         <button onclick="closeClientChatModal()" class="w-7 h-7 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center text-xs">✕</button>
       </div>
 
-      <textarea id="modalClientChatInput" rows="7" class="w-full bg-slate-50 focus:bg-white border border-slate-200 focus:border-primary rounded-xl p-3 text-xs text-slate-800 placeholder:text-slate-400 focus:outline-none transition-all resize-y font-sans leading-relaxed"></textarea>
+      <textarea id="modalClientChatInput" rows="7" class="w-full bg-slate-50 focus:bg-white border border-slate-200 focus:border-primary rounded-xl p-3 text-xs text-slate-800 placeholder:text-slate-400 focus:outline-none transition-all resize-y font-sans leading-relaxed" placeholder="Tempelkan percakapan WhatsApp atau pesan brief dari klien di sini..."></textarea>
 
       <div class="flex items-center justify-between pt-1 border-t border-slate-100">
         <button onclick="document.getElementById('modalClientChatInput').value = ''" class="text-xs text-slate-400 hover:text-error">Bersihkan</button>
@@ -1204,202 +1207,30 @@
       footer: 'CMP-116'     // CMP-116 (Mega) | CMP-117 (Minimal Single)
     };
 
-    // Active Project State
+    // Active Project State (Kosong secara default)
     const activeProject = {
-      name: "Kopi Senja Roastery",
-      slug: "kopi-senja-roastery",
-      tagline: "Aroma Khas Keaslian Biji Kopi Nusantara",
-      headline: "Nikmati Seduhan Kopi Terbaik dengan Karakter Nusantara.",
-      description: "Menghadirkan kurasi biji kopi single-origin pilihan langsung dari petani lokal pegunungan Jawa Barat dengan teknik sangrai presisi.",
-      ctaText: "Pesan Meja / Reservasi",
-      phone: "+62 812-3456-7890",
-      archetype: "F&B / Landing Page",
-      items: [
-        { name: "Single Origin Toraja Sapan", price: "Rp 38.000", desc: "Dark chocolate notes, herbal spice hints, velvety body." },
-        { name: "Gayo Honey Process", price: "Rp 42.000", desc: "Floral jasmine aroma, brown sugar sweetness, bright citrus finish." },
-        { name: "Iced Caramel Macchiato", price: "Rp 35.000", desc: "Artisan caramel syrup blend with single-shot espresso & steamed oatmilk." }
-      ]
+      name: "",
+      slug: "",
+      tagline: "",
+      headline: "",
+      description: "",
+      ctaText: "",
+      phone: "",
+      archetype: "-",
+      items: []
     };
 
-    let clientChatContent = `Halo Mas, mau konsultasi pembuatan website untuk "Kopi Senja Roastery" di Bandung.
-Kita butuh web yang tampilannya modern, warm, dan clean. Harus ada:
-1. Header elegan dengan logo dan menu navigasi.
-2. Hero section dengan headline yang menjual dan tombol reservasi meja.
-3. Katalog 3 menu unggulan beserta harga dan deskripsi singkat.
-4. Jam operasional dan formulir kontak/reservasi cepat via WhatsApp.
-Tolong buatkan yang responsif ya mas, terima kasih!`;
+    // Client chat content (Kosong secara default)
+    let clientChatContent = "";
 
-    // 18 Database Components with REAL MINI VISUAL PREVIEWS
-    const databaseComponents = [
-      { 
-        id: "CMP-101", 
-        name: "Navbar Glass Tahoe", 
-        category: "navbar", 
-        icon: "menu", 
-        tag: "Glassmorphism", 
-        rating: "99%",
-        miniHtml: `<div class="w-full flex items-center justify-between px-2 py-1 bg-slate-100 rounded-full border border-slate-200"><div class="w-3 h-3 rounded-full bg-indigo-600"></div><div class="flex gap-1"><div class="w-4 h-1 bg-slate-300 rounded"></div><div class="w-4 h-1 bg-slate-300 rounded"></div></div><div class="w-6 h-2 rounded bg-indigo-600"></div></div>`
-      },
-      { 
-        id: "CMP-102", 
-        name: "Navbar Minimal Left", 
-        category: "navbar", 
-        icon: "splitscreen", 
-        tag: "Minimal", 
-        rating: "97%",
-        miniHtml: `<div class="w-full flex items-center justify-between px-2 py-1 bg-white border-b border-slate-200"><div class="flex items-center gap-1.5"><div class="w-2.5 h-2.5 rounded bg-slate-800"></div><div class="w-8 h-1 bg-slate-400 rounded"></div></div><div class="w-5 h-2 rounded bg-slate-800"></div></div>`
-      },
-      { 
-        id: "CMP-103", 
-        name: "Hero Split Editorial", 
-        category: "hero", 
-        icon: "view_sidebar", 
-        tag: "Split Layout", 
-        rating: "98%",
-        miniHtml: `<div class="w-full flex gap-1.5 items-center p-1 bg-slate-50 rounded"><div class="flex-1 flex flex-col gap-1"><div class="w-12 h-2 rounded bg-indigo-600"></div><div class="w-8 h-1 rounded bg-slate-300"></div><div class="w-6 h-1.5 rounded bg-indigo-500"></div></div><div class="w-9 h-9 rounded bg-slate-300"></div></div>`
-      },
-      { 
-        id: "CMP-104", 
-        name: "Hero Centered Focus", 
-        category: "hero", 
-        icon: "vertical_align_center", 
-        tag: "Center CTA", 
-        rating: "95%",
-        miniHtml: `<div class="w-full flex flex-col items-center justify-center p-2 bg-slate-50 rounded text-center gap-1"><div class="w-14 h-2 rounded bg-indigo-600"></div><div class="w-10 h-1 rounded bg-slate-300"></div><div class="w-8 h-2 rounded bg-indigo-500"></div></div>`
-      },
-      { 
-        id: "CMP-105", 
-        name: "Hero Card Showcase", 
-        category: "hero", 
-        icon: "smart_display", 
-        tag: "Immersive", 
-        rating: "96%",
-        miniHtml: `<div class="w-full p-2 bg-slate-900 rounded flex flex-col gap-1"><div class="w-10 h-2 bg-white rounded"></div><div class="w-6 h-1 bg-slate-400 rounded"></div><div class="w-7 h-1.5 bg-indigo-400 rounded"></div></div>`
-      },
-      { 
-        id: "CMP-106", 
-        name: "Product Grid 3-Col", 
-        category: "catalog", 
-        icon: "grid_view", 
-        tag: "Ecommerce", 
-        rating: "97%",
-        miniHtml: `<div class="w-full grid grid-cols-3 gap-1 p-1 bg-slate-50 rounded"><div class="h-6 bg-white border border-slate-200 rounded"></div><div class="h-6 bg-white border border-slate-200 rounded"></div><div class="h-6 bg-white border border-slate-200 rounded"></div></div>`
-      },
-      { 
-        id: "CMP-107", 
-        name: "Catalog Horizontal List", 
-        category: "catalog", 
-        icon: "view_list", 
-        tag: "Restaurant", 
-        rating: "94%",
-        miniHtml: `<div class="w-full flex flex-col gap-1 p-1 bg-slate-50 rounded"><div class="h-2.5 bg-white border border-slate-200 rounded"></div><div class="h-2.5 bg-white border border-slate-200 rounded"></div></div>`
-      },
-      { 
-        id: "CMP-108", 
-        name: "Bento Feature Grid", 
-        category: "catalog", 
-        icon: "dashboard", 
-        tag: "Bento Box", 
-        rating: "98%",
-        miniHtml: `<div class="w-full grid grid-cols-2 gap-1 p-1 bg-slate-50 rounded"><div class="h-7 bg-indigo-50 border border-indigo-200 rounded"></div><div class="h-7 bg-white border border-slate-200 rounded"></div></div>`
-      },
-      { 
-        id: "CMP-109", 
-        name: "Pricing Tier 3-Col", 
-        category: "pricing", 
-        icon: "payments", 
-        tag: "SaaS", 
-        rating: "99%",
-        miniHtml: `<div class="w-full grid grid-cols-3 gap-1 p-1 bg-slate-50 rounded"><div class="h-7 bg-white rounded border border-slate-200"></div><div class="h-7 bg-indigo-100 rounded border border-indigo-400"></div><div class="h-7 bg-white rounded border border-slate-200"></div></div>`
-      },
-      { 
-        id: "CMP-110", 
-        name: "Metric Stats Counter", 
-        category: "pricing", 
-        icon: "analytics", 
-        tag: "Stats", 
-        rating: "96%",
-        miniHtml: `<div class="w-full flex items-center justify-around p-1.5 bg-white border border-slate-200 rounded"><div class="text-center"><div class="w-4 h-2 bg-indigo-600 rounded"></div></div><div class="text-center"><div class="w-4 h-2 bg-indigo-600 rounded"></div></div></div>`
-      },
-      { 
-        id: "CMP-111", 
-        name: "Comparison Matrix Table", 
-        category: "pricing", 
-        icon: "table_chart", 
-        tag: "Corporate", 
-        rating: "95%",
-        miniHtml: `<div class="w-full flex flex-col gap-0.5 p-1 bg-slate-100 rounded"><div class="h-2 bg-white rounded"></div><div class="h-2 bg-white rounded"></div><div class="h-2 bg-white rounded"></div></div>`
-      },
-      { 
-        id: "CMP-112", 
-        name: "Testimonial Card Stack", 
-        category: "testimonials", 
-        icon: "rate_review", 
-        tag: "Social Proof", 
-        rating: "97%",
-        miniHtml: `<div class="w-full p-1.5 bg-white border border-slate-200 rounded flex items-center gap-1.5"><div class="w-3.5 h-3.5 rounded-full bg-indigo-300"></div><div class="flex-1 flex flex-col gap-0.5"><div class="w-10 h-1 bg-slate-400 rounded"></div><div class="w-6 h-0.5 bg-slate-200 rounded"></div></div></div>`
-      },
-      { 
-        id: "CMP-113", 
-        name: "Avatar Quote Slider", 
-        category: "testimonials", 
-        icon: "format_quote", 
-        tag: "Clean", 
-        rating: "93%",
-        miniHtml: `<div class="w-full p-2 bg-slate-50 rounded flex flex-col items-center gap-1"><div class="w-3 h-3 rounded-full bg-slate-400"></div><div class="w-12 h-1 bg-slate-300 rounded"></div></div>`
-      },
-      { 
-        id: "CMP-114", 
-        name: "WhatsApp Booking Form", 
-        category: "forms", 
-        icon: "forum", 
-        tag: "Direct CTA", 
-        rating: "98%",
-        miniHtml: `<div class="w-full p-1.5 bg-white border border-slate-200 rounded flex flex-col gap-1"><div class="h-2 bg-slate-100 rounded"></div><div class="h-2.5 bg-emerald-500 rounded"></div></div>`
-      },
-      { 
-        id: "CMP-115", 
-        name: "Newsletter Minimal Form", 
-        category: "forms", 
-        icon: "mail", 
-        tag: "Lead Magnet", 
-        rating: "95%",
-        miniHtml: `<div class="w-full flex gap-1 p-1 bg-slate-100 rounded"><div class="flex-1 h-2.5 bg-white rounded"></div><div class="w-4 h-2.5 bg-indigo-600 rounded"></div></div>`
-      },
-      { 
-        id: "CMP-116", 
-        name: "Footer Mega Clean", 
-        category: "footer", 
-        icon: "call_to_action", 
-        tag: "Enterprise", 
-        rating: "97%",
-        miniHtml: `<div class="w-full p-1.5 bg-slate-900 rounded flex justify-between items-center"><div class="w-5 h-2 bg-white rounded"></div><div class="flex gap-1"><div class="w-3 h-1 bg-slate-500 rounded"></div><div class="w-3 h-1 bg-slate-500 rounded"></div></div></div>`
-      },
-      { 
-        id: "CMP-117", 
-        name: "Footer Minimal Single", 
-        category: "footer", 
-        icon: "horizontal_rule", 
-        tag: "Minimal", 
-        rating: "94%",
-        miniHtml: `<div class="w-full p-1 bg-slate-800 rounded text-center"><div class="w-16 h-1 bg-slate-400 rounded mx-auto"></div></div>`
-      },
-      { 
-        id: "CMP-118", 
-        name: "Floating Action Island", 
-        category: "navbar", 
-        icon: "pan_tool_alt", 
-        tag: "Mobile Nav", 
-        rating: "98%",
-        miniHtml: `<div class="w-16 mx-auto py-1 px-2 bg-slate-900 rounded-full flex justify-around"><div class="w-1.5 h-1.5 rounded-full bg-white"></div><div class="w-1.5 h-1.5 rounded-full bg-slate-500"></div></div>`
-      }
-    ];
+    // =========================================================================
+    // PURE GOOGLE SHEETS-DRIVEN DATABASE (EMPTY BY DEFAULT)
+    // =========================================================================
+    // Dimulai dari 0 komponen kosong. Data otomatis dibaca langsung dari Google Sheets.
+    let databaseComponents = [];
 
-    // Multi-photo scanner state
-    let scannerImages = [
-      "https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?w=1200&auto=format&fit=crop&q=80",
-      "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=1200&auto=format&fit=crop&q=80"
-    ];
+    // Multi-photo scanner state (Kosong secara default)
+    let scannerImages = [];
     let scannerActiveIndex = 0;
 
     // ==========================================
@@ -1410,6 +1241,9 @@ Tolong buatkan yang responsif ya mas, terima kasih!`;
       renderDatabaseGrid(databaseComponents);
       renderLayoutVariantCards();
       populateCategoryDropdown();
+      updateScannerActivePhoto();
+      renderScannerThumbnails();
+      fetchComponentsFromSheet(false);
     });
 
     // ==========================================
@@ -1474,6 +1308,29 @@ Tolong buatkan yang responsif ya mas, terima kasih!`;
       clientChatContent = text;
       closeClientChatModal();
 
+      if (!text) {
+        activeProject.name = "";
+        activeProject.slug = "";
+        activeProject.headline = "";
+        activeProject.tagline = "";
+        activeProject.description = "";
+        activeProject.ctaText = "";
+        activeProject.phone = "";
+        activeProject.archetype = "-";
+        activeProject.items = [];
+
+        document.getElementById("detectedArchetypeBadge").textContent = "-";
+        document.getElementById("detectedArchetypeBadge").className = "text-[10px] font-bold text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full";
+        document.getElementById("chatStatusSubtitle").textContent = "Belum ada chat klien";
+        document.getElementById("accordionBadgeHint").textContent = "Kosong";
+        document.getElementById("accordionBadgeHint").className = "text-[10px] font-medium text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full";
+        document.getElementById("canvasPreviewUrl").textContent = "https://preview.uiuxmaker.cloud/";
+
+        renderLiveWebsite();
+        showToast("Chat klien dikosongkan. Kanvas kembali ke mode kosong.");
+        return;
+      }
+
       // AUTOMATIC ARCHETYPE CLASSIFIER (TRAINED AI PROTOCOL)
       const lower = text.toLowerCase();
       if (lower.includes("hukum") || lower.includes("legal") || lower.includes("korporat") || lower.includes("kantor hukum")) {
@@ -1520,10 +1377,18 @@ Tolong buatkan yang responsif ya mas, terima kasih!`;
         activeProject.headline = "Nikmati Seduhan Kopi Terbaik dengan Karakter Nusantara.";
         activeProject.tagline = "Aroma Khas Keaslian Biji Kopi Nusantara";
         activeProject.ctaText = "Pesan Meja / Reservasi";
+        activeProject.items = [
+          { name: "Single Origin Toraja Sapan", price: "Rp 38.000", desc: "Dark chocolate notes, herbal spice hints, velvety body." },
+          { name: "Gayo Honey Process", price: "Rp 42.000", desc: "Floral jasmine aroma, brown sugar sweetness, bright citrus finish." },
+          { name: "Iced Caramel Macchiato", price: "Rp 35.000", desc: "Artisan caramel syrup blend with single-shot espresso & steamed oatmilk." }
+        ];
       }
 
       document.getElementById("detectedArchetypeBadge").textContent = activeProject.archetype;
+      document.getElementById("detectedArchetypeBadge").className = "text-[10px] font-bold text-primary bg-primary/10 px-2 py-0.5 rounded-full";
       document.getElementById("chatStatusSubtitle").textContent = `✓ Brief ${activeProject.name} Terisi`;
+      document.getElementById("accordionBadgeHint").textContent = activeProject.name;
+      document.getElementById("accordionBadgeHint").className = "text-[10px] font-medium text-emerald-700 bg-emerald-100/80 px-2 py-0.5 rounded-full";
       document.getElementById("canvasPreviewUrl").textContent = `https://preview.uiuxmaker.cloud/${activeProject.slug}`;
 
       renderLiveWebsite();
@@ -1579,13 +1444,33 @@ Tolong buatkan yang responsif ya mas, terima kasih!`;
 
       setTimeout(() => {
         const prompt = document.getElementById("userPromptInput").value.trim();
-        if (prompt) {
+        if (!activeProject.name) {
+          activeProject.name = "Proyek Baru Anda";
+          activeProject.slug = "proyek-baru";
+          activeProject.headline = prompt || "Solusi Desain & Layanan Profesional";
+          activeProject.tagline = "Inovasi Modern & Hasil Berkualitas";
+          activeProject.description = "Platform terpadu untuk menghadirkan pengalaman digital terbaik bagi pelanggan Anda dengan tata letak responsif.";
+          activeProject.ctaText = "Mulai Sekarang";
+          activeProject.phone = "+62 812-3456-7890";
+          activeProject.archetype = "Landing Page / Showcase";
+          activeProject.items = [
+            { name: "Layanan Unggulan 1", price: "Konsultasi", desc: "Solusi terpercaya dengan hasil maksimal." },
+            { name: "Layanan Unggulan 2", price: "Fleksibel", desc: "Dukungan berkelanjutan sesuai kebutuhan." },
+            { name: "Layanan Unggulan 3", price: "Kustom", desc: "Integrasi menyeluruh dengan performa tinggi." }
+          ];
+          document.getElementById("detectedArchetypeBadge").textContent = activeProject.archetype;
+          document.getElementById("detectedArchetypeBadge").className = "text-[10px] font-bold text-primary bg-primary/10 px-2 py-0.5 rounded-full";
+          document.getElementById("chatStatusSubtitle").textContent = `✓ Proyek ${activeProject.name} Aktif`;
+          document.getElementById("accordionBadgeHint").textContent = activeProject.name;
+          document.getElementById("accordionBadgeHint").className = "text-[10px] font-medium text-emerald-700 bg-emerald-100/80 px-2 py-0.5 rounded-full";
+          document.getElementById("canvasPreviewUrl").textContent = `https://preview.uiuxmaker.cloud/${activeProject.slug}`;
+        } else if (prompt) {
           activeProject.headline = prompt;
         }
         renderLiveWebsite();
         btn.innerHTML = `<span class="material-symbols-outlined text-[17px]">magic_button</span><span>Racik &amp; Perbarui Layout Web</span>`;
         btn.disabled = false;
-        showToast("Website berhasil diracik ulang oleh Gemini Flash 3.6!");
+        showToast("Website berhasil diracik oleh Gemini Flash 3.6!");
       }, 550);
     }
 
@@ -1803,22 +1688,26 @@ Tolong buatkan yang responsif ya mas, terima kasih!`;
         </div>
       `;
 
-      databaseComponents.unshift({
+      const newComp = {
         id: newId,
         name: name,
         category: 'kustom',
         icon: icon,
         tag: "Kustom Anda",
         rating: "100%",
-        miniHtml: miniHtml
-      });
+        miniHtml: miniHtml,
+        code: activeMicroTarget.outerHTML
+      };
+
+      databaseComponents.unshift(newComp);
+      syncComponentToSheet(newComp);
 
       document.getElementById("navDbBadge").textContent = databaseComponents.length;
       populateCategoryDropdown();
       renderDatabaseGrid(databaseComponents);
 
       applyMicroChanges();
-      showToast(`Komponen mikro "${name}" (${newId}) disimpan ke Database!`);
+      showToast(`Komponen mikro "${name}" (${newId}) disimpan ke Database & Google Sheets!`);
     }
 
     function rgbToHex(rgb) {
@@ -1840,6 +1729,31 @@ Tolong buatkan yang responsif ya mas, terima kasih!`;
     function renderLiveWebsite() {
       const container = document.getElementById("liveSiteContent");
       if (!container) return;
+
+      if (!activeProject || !activeProject.name) {
+        container.innerHTML = `
+          <div class="py-24 px-6 flex flex-col items-center justify-center text-center max-w-md mx-auto">
+            <div class="w-16 h-16 rounded-2xl bg-indigo-50 text-primary border border-indigo-100 flex items-center justify-center mb-4 shadow-xs">
+              <span class="material-symbols-outlined text-[32px]">web</span>
+            </div>
+            <h3 class="text-base font-bold text-slate-800 mb-1.5">Kanvas Live Masih Kosong</h3>
+            <p class="text-xs text-slate-500 leading-relaxed mb-6">
+              Belum ada rancangan website yang dimuat. Masukkan chat konsultasi klien di panel kiri atau ketik ide prompt, lalu klik <b>"Racik & Perbarui Layout Web"</b>.
+            </p>
+            <div class="flex items-center gap-2">
+              <button onclick="openClientChatModal()" class="px-4 py-2 rounded-xl bg-primary hover:bg-primary/90 text-white font-bold text-xs flex items-center gap-1.5 shadow-sm transition-all">
+                <span class="material-symbols-outlined text-[16px]">chat</span>
+                <span>+ Input Chat Klien</span>
+              </button>
+              <button onclick="document.getElementById('userPromptInput').focus()" class="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs flex items-center gap-1.5 transition-colors">
+                <span class="material-symbols-outlined text-[16px]">edit</span>
+                <span>Ketik Prompt Ide</span>
+              </button>
+            </div>
+          </div>
+        `;
+        return;
+      }
 
       let style = {
         bg: "bg-white",
@@ -2330,6 +2244,10 @@ Tolong buatkan yang responsif ya mas, terima kasih!`;
     }
 
     function openInspectorModal(sectionType) {
+      if (!activeProject || !activeProject.name) {
+        showToast("Kanvas masih kosong. Silakan buat atau racik layout web terlebih dahulu.");
+        return;
+      }
       currentInspectedSection = sectionType;
       const modal = document.getElementById("componentInspectorModal");
       const title = document.getElementById("inspectorSectionTitle");
@@ -2562,12 +2480,38 @@ Tolong buatkan yang responsif ya mas, terima kasih!`;
       activeSectionComponents.hero = preset.hero;
       activeSectionComponents.catalog = preset.catalog;
 
+      if (!activeProject.name) {
+        activeProject.name = "Proyek Baru";
+        activeProject.slug = "proyek-baru";
+        activeProject.headline = "Solusi Desain & Layanan Profesional";
+        activeProject.tagline = "Inovasi Modern & Hasil Berkualitas";
+        activeProject.description = "Platform terpadu untuk menghadirkan pengalaman digital terbaik bagi pelanggan Anda dengan tata letak responsif.";
+        activeProject.ctaText = "Mulai Sekarang";
+        activeProject.phone = "+62 812-3456-7890";
+        activeProject.archetype = "Landing Page / Showcase";
+        activeProject.items = [
+          { name: "Layanan Unggulan 1", price: "Konsultasi", desc: "Solusi terpercaya dengan hasil maksimal." },
+          { name: "Layanan Unggulan 2", price: "Fleksibel", desc: "Dukungan berkelanjutan sesuai kebutuhan." },
+          { name: "Layanan Unggulan 3", price: "Kustom", desc: "Integrasi menyeluruh dengan performa tinggi." }
+        ];
+        document.getElementById("detectedArchetypeBadge").textContent = activeProject.archetype;
+        document.getElementById("detectedArchetypeBadge").className = "text-[10px] font-bold text-primary bg-primary/10 px-2 py-0.5 rounded-full";
+        document.getElementById("chatStatusSubtitle").textContent = `✓ Proyek ${activeProject.name} Aktif`;
+        document.getElementById("accordionBadgeHint").textContent = activeProject.name;
+        document.getElementById("accordionBadgeHint").className = "text-[10px] font-medium text-emerald-700 bg-emerald-100/80 px-2 py-0.5 rounded-full";
+        document.getElementById("canvasPreviewUrl").textContent = `https://preview.uiuxmaker.cloud/${activeProject.slug}`;
+      }
+
       renderLayoutVariantCards();
       renderLiveWebsite();
       showToast(`Struktur website diubah ke: "${preset.title}"!`);
     }
 
     function shuffleLayoutRecommendations() {
+      if (!databaseComponents || databaseComponents.length === 0) {
+        showToast("Database Google Sheets masih kosong. Simpan beberapa komponen terlebih dahulu untuk mengacak layout!");
+        return;
+      }
       // REAL DYNAMIC SHUFFLE: Pick random components directly from databaseComponents!
       const navs = databaseComponents.filter(c => c.category === 'navbar');
       const heroes = databaseComponents.filter(c => c.category === 'hero');
@@ -2626,11 +2570,39 @@ Tolong buatkan yang responsif ya mas, terima kasih!`;
     }
 
     // ==========================================
-    // 8. DATABASE BENTO GRID & FILTER
+    // 8. DATABASE BENTO GRID, EMPTY STATE & LIVE GOOGLE SHEETS
     // ==========================================
     function renderDatabaseGrid(items) {
       const grid = document.getElementById("dbGridContainer");
       if (!grid) return;
+
+      if (!items || items.length === 0) {
+        const isSheetConnected = !!localStorage.getItem("uiuxmaker_gsheet_url");
+        grid.innerHTML = `
+          <div class="col-span-full py-14 px-4 flex flex-col items-center justify-center text-center max-w-md mx-auto">
+            <div class="w-14 h-14 rounded-2xl bg-indigo-50 text-primary flex items-center justify-center mb-3 shadow-xs border border-indigo-100">
+              <span class="material-symbols-outlined text-[28px]">${isSheetConnected ? 'table_rows' : 'cloud_off'}</span>
+            </div>
+            <h3 class="text-sm font-bold text-slate-800 mb-1">Database Google Sheets Kosong</h3>
+            <p class="text-xs text-slate-500 leading-relaxed mb-4">
+              ${isSheetConnected 
+                ? 'Spreadsheet Google Sheets Anda saat ini belum memiliki baris komponen. Simpan komponen baru dari <b>Maker UI</b> (Micro-Inspector) atau <b>Scanner</b> untuk mengisinya.' 
+                : 'Belum ada Google Sheets yang terhubung. Masukkan URL Web App Google Sheets Anda di menu <b>Pengaturan</b> atau mulai simpan komponen kustom.'}
+            </p>
+            <div class="flex items-center gap-2">
+              <button onclick="openApiKeyModal()" class="px-3.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-xs font-bold text-slate-700 flex items-center gap-1.5 transition-colors">
+                <span class="material-symbols-outlined text-[15px]">key</span>
+                <span>${isSheetConnected ? 'Ganti URL Sheet' : 'Sambungkan Google Sheets'}</span>
+              </button>
+              <button onclick="switchView('maker-ui')" class="px-3.5 py-1.5 rounded-xl bg-primary hover:bg-primary/90 text-xs font-bold text-white shadow-xs flex items-center gap-1.5 transition-all">
+                <span class="material-symbols-outlined text-[15px]">dashboard_customize</span>
+                <span>Buat di Maker UI</span>
+              </button>
+            </div>
+          </div>
+        `;
+        return;
+      }
 
       grid.innerHTML = items.map(comp => `
         <div onclick="openComponentDetailModal('${comp.id}')" class="p-2.5 bg-white hover:bg-slate-50/80 rounded-xl border border-slate-200/80 hover:border-primary/50 shadow-2xs hover:shadow-md cursor-pointer transition-all flex flex-col justify-between gap-2 group">
@@ -2640,7 +2612,7 @@ Tolong buatkan yang responsif ya mas, terima kasih!`;
           </div>
 
           <div class="h-14 rounded-lg bg-slate-50 border border-slate-200/60 p-1.5 flex items-center justify-center overflow-hidden group-hover:scale-102 transition-transform">
-            ${comp.miniHtml || `<span class="material-symbols-outlined text-slate-400">${comp.icon}</span>`}
+            ${comp.miniHtml || `<span class="material-symbols-outlined text-slate-400">${comp.icon || 'extension'}</span>`}
           </div>
 
           <div class="flex flex-col">
@@ -2654,6 +2626,7 @@ Tolong buatkan yang responsif ya mas, terima kasih!`;
     function populateCategoryDropdown() {
       const dropdown = document.getElementById("dbCategoryDropdown");
       const badge = document.getElementById("dbCategoryCountBadge");
+      const navBadge = document.getElementById("navDbBadge");
       if (!dropdown) return;
 
       const currentSelected = dropdown.value || 'all';
@@ -2689,6 +2662,9 @@ Tolong buatkan yang responsif ya mas, terima kasih!`;
       if (badge) {
         badge.textContent = `${databaseComponents.length} Komponen`;
       }
+      if (navBadge) {
+        navBadge.textContent = databaseComponents.length;
+      }
     }
 
     function filterCategoryDropdown(category) {
@@ -2707,7 +2683,110 @@ Tolong buatkan yang responsif ya mas, terima kasih!`;
     }
 
     function triggerSheetSync() {
-      showToast("Sinkronisasi Google Sheets sukses! 18 Komponen terverifikasi.");
+      fetchComponentsFromSheet(true);
+    }
+
+    // =========================================================================
+    // GOOGLE SHEETS LIVE INTEGRATION (GET & POST)
+    // =========================================================================
+    async function fetchComponentsFromSheet(isManual = false) {
+      const gsheetUrl = localStorage.getItem("uiuxmaker_gsheet_url");
+      const badge = document.getElementById("dbCategoryCountBadge");
+      const navBadge = document.getElementById("navDbBadge");
+      const syncBtn = document.querySelector("button[onclick='triggerSheetSync()']");
+
+      if (!gsheetUrl) {
+        databaseComponents = [];
+        populateCategoryDropdown();
+        renderDatabaseGrid(databaseComponents);
+        if (badge) badge.textContent = "0 Komponen";
+        if (navBadge) navBadge.textContent = "0";
+
+        if (isManual) {
+          showToast("URL Google Sheets belum diatur. Masukkan URL Web App di menu Pengaturan (ikon kunci).");
+          openApiKeyModal();
+        }
+        return;
+      }
+
+      if (syncBtn) {
+        syncBtn.classList.add("animate-spin");
+      }
+      if (isManual) {
+        showToast("Menghubungkan ke Google Sheets...");
+      }
+
+      try {
+        const endpoint = gsheetUrl.includes("?") ? `${gsheetUrl}&action=getComponents` : `${gsheetUrl}?action=getComponents`;
+        const res = await fetch(endpoint);
+        if (!res.ok) throw new Error(`HTTP Error ${res.status}`);
+        const result = await res.json();
+
+        if (result && Array.isArray(result.data)) {
+          databaseComponents = result.data.map(item => ({
+            id: item.id || `CMP-${Math.floor(100 + Math.random() * 900)}`,
+            name: item.name || "Komponen",
+            category: (item.category || "kustom").toLowerCase().trim(),
+            icon: item.icon || (item.category === 'navbar' ? 'menu' : (item.category === 'hero' ? 'view_sidebar' : 'extension')),
+            tag: item.tag || "Google Sheets",
+            rating: item.rating || "100%",
+            code: item.code || "",
+            miniHtml: item.miniHtml || `<div class="w-full p-2 text-center text-[10px] font-bold rounded bg-slate-50 border border-slate-200 text-slate-700">${item.name || 'Komponen'}</div>`
+          }));
+        } else {
+          databaseComponents = [];
+        }
+
+        populateCategoryDropdown();
+        renderDatabaseGrid(databaseComponents);
+        if (badge) badge.textContent = `${databaseComponents.length} Komponen`;
+        if (navBadge) navBadge.textContent = databaseComponents.length;
+
+        if (isManual) {
+          if (databaseComponents.length === 0) {
+            showToast("Google Sheets terhubung! Spreadsheet masih kosong (0 komponen).");
+          } else {
+            showToast(`Sinkronisasi sukses! ${databaseComponents.length} komponen dimuat dari Google Sheets.`);
+          }
+        }
+      } catch (err) {
+        console.warn("Gagal membaca Google Sheets:", err);
+        if (isManual) {
+          showToast("Gagal memuat dari Google Sheets. Pastikan Web App disetel 'Anyone' & mendukung action=getComponents.");
+        }
+      } finally {
+        if (syncBtn) {
+          syncBtn.classList.remove("animate-spin");
+        }
+      }
+    }
+
+    async function syncComponentToSheet(comp) {
+      const gsheetUrl = localStorage.getItem("uiuxmaker_gsheet_url");
+      if (!gsheetUrl) {
+        console.log("Google Sheets URL belum diisi. Komponen disimpan secara lokal.");
+        return;
+      }
+
+      try {
+        fetch(gsheetUrl, {
+          method: "POST",
+          mode: "no-cors",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            id: comp.id,
+            name: comp.name,
+            category: comp.category,
+            icon: comp.icon || 'extension',
+            tag: comp.tag || 'Kustom Anda',
+            code: comp.code || '',
+            miniHtml: comp.miniHtml || ''
+          })
+        });
+        console.log("Komponen dikirim ke Google Sheets:", comp.id);
+      } catch (err) {
+        console.warn("Gagal mengirim komponen ke Google Sheets:", err);
+      }
     }
 
     let activeDetailComp = null;
@@ -2807,34 +2886,48 @@ Tolong buatkan yang responsif ya mas, terima kasih!`;
     }
 
     function selectScannerActivePhoto(index) {
+      if (scannerImages.length === 0) return;
       scannerActiveIndex = index;
       updateScannerActivePhoto();
       renderScannerThumbnails();
     }
 
     function updateScannerActivePhoto() {
+      const img = document.getElementById("scannerPreviewImage");
+      const emptyState = document.getElementById("scannerEmptyState");
+      const title = document.getElementById("scannerCanvasTitle");
+      const countPill = document.getElementById("detectedCountPill");
+
       if (scannerImages.length > 0) {
-        document.getElementById("scannerPreviewImage").src = scannerImages[scannerActiveIndex];
-        document.getElementById("scannerCanvasTitle").textContent = `Pratinjau Foto ${scannerActiveIndex + 1} / ${scannerImages.length}`;
+        if (img) {
+          img.classList.remove("hidden");
+          img.src = scannerImages[scannerActiveIndex];
+        }
+        if (emptyState) emptyState.classList.add("hidden");
+        if (title) title.textContent = `Pratinjau Foto ${scannerActiveIndex + 1} / ${scannerImages.length}`;
+        if (countPill) countPill.textContent = "6";
         const detectedModal = document.getElementById("detectedComponentsModal");
         if (detectedModal && !detectedModal.classList.contains("hidden")) {
           renderDetectedModalList();
         }
+      } else {
+        if (img) img.classList.add("hidden");
+        if (emptyState) emptyState.classList.remove("hidden");
+        if (title) title.textContent = "Belum Ada Foto";
+        if (countPill) countPill.textContent = "0";
       }
     }
 
     function prevScannerPhoto() {
-      if (scannerImages.length > 0) {
-        scannerActiveIndex = (scannerActiveIndex - 1 + scannerImages.length) % scannerImages.length;
-        selectScannerActivePhoto(scannerActiveIndex);
-      }
+      if (scannerImages.length === 0) return;
+      scannerActiveIndex = (scannerActiveIndex - 1 + scannerImages.length) % scannerImages.length;
+      selectScannerActivePhoto(scannerActiveIndex);
     }
 
     function nextScannerPhoto() {
-      if (scannerImages.length > 0) {
-        scannerActiveIndex = (scannerActiveIndex + 1) % scannerImages.length;
-        selectScannerActivePhoto(scannerActiveIndex);
-      }
+      if (scannerImages.length === 0) return;
+      scannerActiveIndex = (scannerActiveIndex + 1) % scannerImages.length;
+      selectScannerActivePhoto(scannerActiveIndex);
     }
 
     function removeScannerPhoto(idx, event) {
@@ -2845,9 +2938,14 @@ Tolong buatkan yang responsif ya mas, terima kasih!`;
       }
       renderScannerThumbnails();
       updateScannerActivePhoto();
+      showToast("Foto dihapus dari Scanner.");
     }
 
     function startScannerAnalysis() {
+      if (!scannerImages || scannerImages.length === 0) {
+        showToast("Unggah atau tempel gambar desain terlebih dahulu untuk memindai!");
+        return;
+      }
       const laser = document.getElementById("scannerLaser");
       const btn = document.getElementById("btnStartScan");
 
@@ -2870,6 +2968,20 @@ Tolong buatkan yang responsif ya mas, terima kasih!`;
       const subtitleEl = document.getElementById("detectedModalSubtitle");
       const badgeEl = document.getElementById("detectedModalCountBadge");
       if (!listContainer) return;
+
+      if (!scannerImages || scannerImages.length === 0) {
+        if (titleEl) titleEl.textContent = "Belum Ada Foto untuk Dibedah";
+        if (subtitleEl) subtitleEl.textContent = "Unggah atau tempel gambar desain terlebih dahulu di panel Scanner.";
+        if (badgeEl) badgeEl.textContent = "0 Komponen";
+        listContainer.innerHTML = `
+          <div class="col-span-full py-12 text-center flex flex-col items-center justify-center">
+            <span class="material-symbols-outlined text-[36px] text-slate-300 mb-2">image_not_supported</span>
+            <p class="text-xs text-slate-500 font-semibold mb-1">Kanvas Scanner Masih Kosong</p>
+            <p class="text-[11px] text-slate-400">Unggah foto desain di menu Scanner untuk melihat hasil bedah komponen AI.</p>
+          </div>
+        `;
+        return;
+      }
 
       let components = [];
       if (scannerActiveIndex === 0) {
@@ -3081,21 +3193,25 @@ Tolong buatkan yang responsif ya mas, terima kasih!`;
       const name = document.getElementById("manualCompName").value.trim() || "Komponen Manual Kustom";
       const newId = `CMP-${Math.floor(200 + Math.random() * 800)}`;
 
-      databaseComponents.unshift({
+      const newComp = {
         id: newId,
         name: name,
         category: cat,
         icon: cat === 'navbar' ? 'menu' : (cat === 'hero' ? 'view_sidebar' : (cat === 'forms' ? 'forum' : 'extension')),
         tag: "Manual Safeguard",
         rating: "100%",
-        miniHtml: `<div class="w-full h-8 bg-amber-50 border border-amber-300 rounded flex items-center justify-center text-[9px] font-bold text-amber-800">${name}</div>`
-      });
+        miniHtml: `<div class="w-full h-8 bg-amber-50 border border-amber-300 rounded flex items-center justify-center text-[9px] font-bold text-amber-800">${name}</div>`,
+        code: `<!-- UI/UX Maker: ${name} -->\n<div class="p-4 bg-white rounded-2xl border border-slate-200 shadow-sm"><h3 class="text-sm font-bold">${name}</h3></div>`
+      };
+
+      databaseComponents.unshift(newComp);
+      syncComponentToSheet(newComp);
 
       document.getElementById("navDbBadge").textContent = databaseComponents.length;
       populateCategoryDropdown();
       renderDatabaseGrid(databaseComponents);
       closeSafeguardModal();
-      showToast(`Pengaman aktif: "${name}" (${newId}) disimpan ke Database!`);
+      showToast(`Pengaman aktif: "${name}" (${newId}) disimpan ke Database & Google Sheets!`);
     }
 
     function triggerSafeguardRescan() {
@@ -3119,15 +3235,19 @@ Tolong buatkan yang responsif ya mas, terima kasih!`;
 
     function saveComponentFromModal(name, category, btnElement) {
       const newId = `CMP-${Math.floor(100 + Math.random() * 900)}`;
-      databaseComponents.unshift({
+      const newComp = {
         id: newId,
         name: name,
         category: category,
         icon: category === 'navbar' ? 'menu' : (category === 'hero' ? 'view_sidebar' : (category === 'forms' ? 'forum' : (category === 'footer' ? 'call_to_action' : 'grid_view'))),
         tag: "Extracted AI",
         rating: "99%",
-        miniHtml: `<div class="w-full h-8 bg-indigo-50 border border-indigo-200 rounded flex items-center justify-center text-[9px] font-bold text-indigo-700">${name}</div>`
-      });
+        miniHtml: `<div class="w-full h-8 bg-indigo-50 border border-indigo-200 rounded flex items-center justify-center text-[9px] font-bold text-indigo-700">${name}</div>`,
+        code: `<!-- UI/UX Maker: ${name} -->\n<div class="p-4 bg-white rounded-2xl border border-slate-200 shadow-sm"><h3 class="text-sm font-bold text-slate-900">${name}</h3></div>`
+      };
+
+      databaseComponents.unshift(newComp);
+      syncComponentToSheet(newComp);
 
       document.getElementById("navDbBadge").textContent = databaseComponents.length;
       populateCategoryDropdown();
@@ -3192,6 +3312,10 @@ Mohon bangun halaman web / aplikasi dengan mempertahankan struktur layout, gaya 
     }
 
     function copyAiPrompt() {
+      if (!activeProject || !activeProject.name) {
+        showToast("Kanvas masih kosong. Buat website terlebih dahulu sebelum menyalin untuk AI.");
+        return;
+      }
       const payload = generateAiPromptPayload();
       navigator.clipboard.writeText(payload);
       showToast("✨ Format AI berhasil disalin! Tempelkan (Ctrl+V) langsung ke chat Antigravity.");
@@ -3324,9 +3448,14 @@ function syncComponentToDatabase(componentData) {
       const key = document.getElementById("geminiApiKeyInput").value.trim();
       const gsheet = document.getElementById("gsheetUrlInput").value.trim();
       if (key) localStorage.setItem("uiuxmaker_gemini_api_key", key);
-      if (gsheet) localStorage.setItem("uiuxmaker_gsheet_url", gsheet);
+      if (gsheet) {
+        localStorage.setItem("uiuxmaker_gsheet_url", gsheet);
+      } else {
+        localStorage.removeItem("uiuxmaker_gsheet_url");
+      }
       closeApiKeyModal();
-      showToast("Pengaturan Gemini Flash 3.6 & Google Sheets disimpan.");
+      showToast("Pengaturan disimpan. Menghubungkan Google Sheets...");
+      fetchComponentsFromSheet(true);
     }
 
     let toastTimeout = null;
