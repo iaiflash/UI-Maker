@@ -1,408 +1,207 @@
 /**
  * ==============================================================================
- * BACKEND CONTROLLER: AI UI/UX ARCHITECT GENERATOR
- * Google Apps Script (GAS) ES6
+ * GOOGLE APPS SCRIPT BACKEND & GOOGLE SHEETS CONNECTOR
+ * UI/UX Maker — Gemini Flash 3.6 & Live Spreadsheet Database
  * ==============================================================================
- * Mengatur alur kerja Multi-Step Agentic:
- * 1. Step 1 (Planner): Konversi prompt menjadi JSON UX Blueprint
- * 2. Step 2 (Component Retrieval): Pencarian komponen Tailwind di Database.gs
- * 3. Step 3 (Multimodal Vision): Bedah screenshot UI menjadi komponen Tailwind
- * 4. Step 4 (AI Code Assembler): Meracik HTML & Tailwind CSS utuh siap pakai
+ * Petunjuk Penggunaan:
+ * 1. Buka Google Sheet Anda: https://docs.google.com/spreadsheets/d/1uu1SffQ4xkOKaNVQjKX_mfSG3NwqVR0PFX8Xgk-1kIo/edit
+ * 2. Klik Ekstensi > Apps Script.
+ * 3. Tempelkan seluruh kode ini (replace semua kode lama).
+ * 4. Klik Deploy > New deployment (Penerapan baru) > Jenis: Web App.
+ *    - Execute as: Me (Email Anda)
+ *    - Who has access: Anyone (Siapa saja)
+ * 5. Klik Deploy dan salin URL Web App yang berakhiran /exec.
+ * 6. Buka UI/UX Maker > Klik tombol Kunci (Pengaturan) > Tempelkan URL tersebut.
  */
 
-// Model default Gemini API
-const GEMINI_MODEL = "gemini-2.5-flash";
-const GEMINI_BASE_URL = "https://generativelanguage.googleapis.com/v1beta/models/";
+// Fallback ID Spreadsheet pengguna (Database UI Maker)
+const DEFAULT_SPREADSHEET_ID = "1uu1SffQ4xkOKaNVQjKX_mfSG3NwqVR0PFX8Xgk-1kIo";
 
 /**
- * Entry point Web App Google Apps Script
+ * Mendapatkan referensi Sheet secara cerdas (baik container-bound maupun standalone)
+ */
+function getTargetSheet(e) {
+  let ss = null;
+  try {
+    ss = SpreadsheetApp.getActiveSpreadsheet();
+  } catch (err) {
+    ss = null;
+  }
+
+  if (!ss) {
+    const sheetId = (e && e.parameter && e.parameter.sheetId) ? e.parameter.sheetId : DEFAULT_SPREADSHEET_ID;
+    try {
+      ss = SpreadsheetApp.openById(sheetId);
+    } catch (err) {
+      throw new Error("Gagal membuka spreadsheet (" + sheetId + "). Pastikan script memiliki izin akses spreadsheet.");
+    }
+  }
+
+  return ss.getActiveSheet();
+}
+
+/**
+ * 1. ENTRY POINT WEB APP & GET REST ENDPOINT
  */
 function doGet(e) {
-  const template = HtmlService.createTemplateFromFile("Index");
-  return template.evaluate()
-    .setTitle("AI UI/UX Architect Generator | Google Apps Script")
-    .addMetaTag("viewport", "width=device-width, initial-scale=1.0")
-    .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
-}
+  const action = e && e.parameter ? e.parameter.action : "";
 
-/**
- * Mengambil API Key dari Script Properties
- */
-function getStoredApiKey() {
+  // A. Endpoint API: UI/UX Maker memanggil untuk membaca seluruh komponen dari Google Sheet
+  if (action === "getComponents" || (e && e.parameter && e.parameter.callback)) {
+    return getAllComponentsJson(e);
+  }
+
+  // B. Default: Jika dibuka langsung di browser, tampilkan status API atau Index
   try {
-    const props = PropertiesService.getScriptProperties();
-    return props.getProperty("GEMINI_API_KEY") || "";
+    const template = HtmlService.createTemplateFromFile("Index");
+    return template.evaluate()
+      .setTitle("UI/UX Maker — Google Apps Script Engine")
+      .addMetaTag("viewport", "width=device-width, initial-scale=1.0")
+      .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
   } catch (err) {
-    Logger.log("Gagal membaca ScriptProperties: " + err.message);
-    return "";
+    return getAllComponentsJson(e);
   }
 }
 
 /**
- * Menyimpan API Key ke Script Properties
+ * 2. MEMBACA SELURUH KOMPONEN DARI GOOGLE SHEET (JSON OUTPUT)
  */
-function saveStoredApiKey(apiKey) {
-  if (!apiKey || typeof apiKey !== "string") {
-    throw new Error("API Key tidak valid.");
-  }
-  const props = PropertiesService.getScriptProperties();
-  props.setProperty("GEMINI_API_KEY", apiKey.trim());
-  return { success: true, message: "Gemini API Key berhasil disimpan di Script Properties." };
-}
-
-/**
- * Helper internal untuk melakukan HTTP POST ke REST API Gemini
- */
-function callGeminiREST(endpoint, payload, apiKey) {
-  const url = `${GEMINI_BASE_URL}${endpoint}?key=${encodeURIComponent(apiKey)}`;
-  
-  const options = {
-    method: "post",
-    contentType: "application/json",
-    payload: JSON.stringify(payload),
-    muteHttpExceptions: true
-  };
-
+function getAllComponentsJson(e) {
   try {
-    const response = UrlFetchApp.fetch(url, options);
-    const responseCode = response.getResponseCode();
-    const responseText = response.getContentText();
+    const sheet = getTargetSheet(e);
+    const data = sheet.getDataRange().getValues();
 
-    if (responseCode !== 200) {
-      let errorMsg = `Gemini API Error (HTTP ${responseCode})`;
-      try {
-        const errorJson = JSON.parse(responseText);
-        if (errorJson.error && errorJson.error.message) {
-          errorMsg += `: ${errorJson.error.message}`;
-        }
-      } catch (e) {
-        errorMsg += `: ${responseText.substring(0, 150)}`;
-      }
-      throw new Error(errorMsg);
+    // Jika spreadsheet masih kosong atau hanya baris judul (header)
+    if (!data || data.length <= 1) {
+      return ContentService.createTextOutput(JSON.stringify({
+        status: "success",
+        total: 0,
+        data: []
+      })).setMimeType(ContentService.MimeType.JSON);
     }
 
-    const json = JSON.parse(responseText);
-    const candidate = json.candidates && json.candidates[0];
-    if (!candidate || !candidate.content || !candidate.content.parts || !candidate.content.parts[0]) {
-      throw new Error("Respon kosong atau diblokir oleh filter keamanan Gemini.");
+    // Deteksi letak kolom berdasarkan nama header baris pertama
+    const headers = data[0].map(function(h) { return String(h).toLowerCase().trim(); });
+    const colCount = headers.length;
+
+    let idIdx = headers.findIndex(function(h) { return h.indexOf("id") !== -1; });
+    let nameIdx = headers.findIndex(function(h) { return h.indexOf("nama") !== -1; });
+    let catIdx = headers.findIndex(function(h) { return h.indexOf("kategori") !== -1; });
+    let codeIdx = headers.findIndex(function(h) { return h.indexOf("kode") !== -1 || h.indexOf("tailwind") !== -1 || h.indexOf("html") !== -1; });
+    let iconIdx = headers.findIndex(function(h) { return h.indexOf("icon") !== -1; });
+    let tagIdx = headers.findIndex(function(h) { return h.indexOf("tag") !== -1; });
+
+    // Fallback jika header tidak standar:
+    // Model 5 Kolom (seperti di Gambar 1 pengguna): [0: Timestamp, 1: ID, 2: Nama, 3: Kategori, 4: Kode Tailwind]
+    if (idIdx === -1) idIdx = 1;
+    if (nameIdx === -1) nameIdx = 2;
+    if (catIdx === -1) catIdx = 3;
+    if (codeIdx === -1) codeIdx = (colCount <= 6) ? 4 : 6;
+    if (iconIdx === -1) iconIdx = (colCount > 6) ? 4 : -1;
+    if (tagIdx === -1) tagIdx = (colCount > 6) ? 5 : -1;
+
+    const components = [];
+    for (let i = 1; i < data.length; i++) {
+      const row = data[i];
+      // Lewati baris kosong
+      if (!row[0] && !row[1] && !row[2]) continue;
+
+      const compId = row[idIdx] ? String(row[idIdx]) : `CMP-${i}`;
+      const compName = row[nameIdx] ? String(row[nameIdx]) : "Komponen Kustom";
+      const compCat = row[catIdx] ? String(row[catIdx]).toLowerCase().trim() : "kustom";
+      const compCode = (codeIdx !== -1 && row[codeIdx]) ? String(row[codeIdx]) : "";
+      const compIcon = (iconIdx !== -1 && row[iconIdx]) ? String(row[iconIdx]) : (compCat === 'navbar' ? 'menu' : (compCat === 'hero' ? 'view_sidebar' : 'extension'));
+      const compTag = (tagIdx !== -1 && row[tagIdx]) ? String(row[tagIdx]) : "Google Sheets";
+
+      components.push({
+        timestamp: row[0] ? String(row[0]) : "",
+        id: compId,
+        name: compName,
+        category: compCat,
+        icon: compIcon,
+        tag: compTag,
+        code: compCode,
+        miniHtml: `<div class="w-full p-2 text-center text-[10px] font-bold rounded bg-slate-50 border border-slate-200 text-slate-700">${compName}</div>`
+      });
     }
 
-    return candidate.content.parts[0].text;
-  } catch (error) {
-    Logger.log("Error pada callGeminiREST: " + error.message);
-    throw error;
-  }
-}
+    return ContentService.createTextOutput(JSON.stringify({
+      status: "success",
+      total: components.length,
+      data: components
+    })).setMimeType(ContentService.MimeType.JSON);
 
-/**
- * Memastikan tersedianya API Key aktif
- */
-function resolveApiKey(clientApiKey) {
-  const key = (clientApiKey && clientApiKey.trim()) || getStoredApiKey();
-  if (!key) {
-    throw new Error("Gemini API Key belum dikonfigurasi. Masukkan API Key di pengaturan atau simpan ke Script Properties.");
-  }
-  return key;
-}
-
-/**
- * ==============================================================================
- * WORKFLOW UTAMA: MULTI-STEP AGENTIC GENERATOR
- * ==============================================================================
- * Menjalankan Step 1 -> Step 2 -> Step 4
- */
-function processClientWorkflow(userPrompt, clientApiKey) {
-  const apiKey = resolveApiKey(clientApiKey);
-  
-  if (!userPrompt || userPrompt.trim() === "") {
-    throw new Error("Prompt klien tidak boleh kosong.");
-  }
-
-  Logger.log("=== MEMULAI WORKFLOW AGENTIC ===");
-  Logger.log("Prompt Klien: " + userPrompt);
-
-  // ----------------------------------------------------------------------------
-  // STEP 1: PLANNER AGENT (Mengubah prompt kasar menjadi JSON UX Blueprint)
-  // ----------------------------------------------------------------------------
-  const plannerSystemInstruction = `Anda adalah Senior UX/UI Architect bertaraf dunia.
-Tugas Anda adalah membedah ide kasar atau prompt klien menjadi JSON UX Blueprint yang terstruktur rapi.
-Format respon Anda HARUS berupa format JSON murni tanpa markdown dengan skema:
-{
-  "businessNiche": "kategori bisnis/industri spesifik",
-  "targetAudience": "demografi atau persona pengguna target",
-  "designTone": "contoh: Modern Dark SaaS / Minimalist Luxury / Energetic Playful",
-  "colorPalette": {
-    "primary": "kode warna hex/tailwind (misal: #6366f1 / indigo-600)",
-    "secondary": "kode warna hex/tailwind",
-    "background": "misal: #090d16 / slate-950",
-    "accent": "misal: #ec4899 / pink-500"
-  },
-  "sections": [
-    {
-      "id": "navbar",
-      "category": "navbar",
-      "title": "Sticky Glassmorphic Navigation",
-      "purpose": "Navigasi utama dan call-to-action daftar",
-      "requiredTags": ["navbar", "sticky", "glassmorphism"]
-    },
-    {
-      "id": "hero",
-      "category": "hero",
-      "title": "High-Impact Hero Section",
-      "purpose": "Headline nilai unik, social proof, dan CTA utama",
-      "requiredTags": ["hero", "saas", "glow", "cta"]
-    },
-    {
-      "id": "features",
-      "category": "features",
-      "title": "Bento Grid Capabilities",
-      "purpose": "Menampilkan 4-6 keunggulan kompetitif produk",
-      "requiredTags": ["features", "bento", "grid"]
-    },
-    {
-      "id": "pricing",
-      "category": "pricing",
-      "title": "Tiered Pricing Plans",
-      "purpose": "Tabel harga transparan dengan badge pilihan terbaik",
-      "requiredTags": ["pricing", "tiers", "subscription"]
-    },
-    {
-      "id": "footer",
-      "category": "footer",
-      "title": "Comprehensive Footer",
-      "purpose": "Tautan pendukung, legalitas, dan newsletter",
-      "requiredTags": ["footer", "links", "newsletter"]
-    }
-  ]
-}`;
-
-  const plannerPayload = {
-    contents: [
-      {
-        role: "user",
-        parts: [
-          { text: `Permintaan Klien:\n"${userPrompt}"\n\nAnalisis dan susun UX Blueprint terstruktur dalam JSON.` }
-        ]
-      }
-    ],
-    systemInstruction: {
-      parts: [{ text: plannerSystemInstruction }]
-    },
-    generationConfig: {
-      temperature: 0.2,
-      responseMimeType: "application/json"
-    }
-  };
-
-  let blueprint;
-  try {
-    const rawBlueprint = callGeminiREST(`${GEMINI_MODEL}:generateContent`, plannerPayload, apiKey);
-    blueprint = JSON.parse(rawBlueprint);
   } catch (err) {
-    Logger.log("Planner error: " + err.message);
-    blueprint = {
-      businessNiche: "Modern Digital Product",
-      targetAudience: "Tech Enthusiasts & Professionals",
-      designTone: "Modern Dark Mode SaaS",
-      colorPalette: { primary: "indigo-600", secondary: "purple-600", background: "slate-950", accent: "pink-500" },
-      sections: [
-        { id: "navbar", category: "navbar", requiredTags: ["navbar", "sticky"] },
-        { id: "hero", category: "hero", requiredTags: ["hero", "saas", "glow"] },
-        { id: "features", category: "features", requiredTags: ["features", "bento"] },
-        { id: "footer", category: "footer", requiredTags: ["footer"] }
-      ]
-    };
+    return ContentService.createTextOutput(JSON.stringify({
+      status: "error",
+      message: err.message,
+      data: []
+    })).setMimeType(ContentService.MimeType.JSON);
   }
-
-  // ----------------------------------------------------------------------------
-  // STEP 2: COMPONENT RETRIEVAL (Mencari komponen di Database.gs)
-  // ----------------------------------------------------------------------------
-  let allSearchTags = [];
-  if (blueprint.sections && Array.isArray(blueprint.sections)) {
-    blueprint.sections.forEach(function(sec) {
-      if (sec.requiredTags && Array.isArray(sec.requiredTags)) {
-        allSearchTags = allSearchTags.concat(sec.requiredTags);
-      }
-      if (sec.category) {
-        allSearchTags.push(sec.category);
-      }
-    });
-  }
-
-  const matchedComponents = queryComponentsFromDb(allSearchTags);
-  const componentSummariesForClient = matchedComponents.map(function(c) {
-    return { id: c.id, name: c.name, category: c.category, tags: c.tags };
-  });
-
-  const componentSnippetsContext = matchedComponents.map(function(c, idx) {
-    return `--- REFERENSI KOMPONEN #${idx + 1} [Kategori: ${c.category}] (ID: ${c.id}) ---\n${c.html}`;
-  }).join("\n\n");
-
-  // ----------------------------------------------------------------------------
-  // STEP 4: AI CODE ASSEMBLER (Meracik HTML & Tailwind CSS utuh)
-  // ----------------------------------------------------------------------------
-  const assemblerSystemInstruction = `Anda adalah Master Frontend Developer kelas dunia yang ahli meracik antarmuka web modern menggunakan Tailwind CSS.
-Tugas Anda adalah menggabungkan UX Blueprint, referensi komponen database, dan permintaan klien menjadi satu dokumen HTML5 LENGKAP dan MANDIRI (Self-Contained).
-
-PANDUAN DESAIN WAJIB:
-1. Struktur Dokumen:
-   - Awali dengan <!DOCTYPE html> hingga </html>.
-   - Di dalam <head>, sertakan CDN Tailwind CSS: <script src="https://cdn.tailwindcss.com"></script>.
-   - Gunakan Google Fonts (Inter atau Outfit) untuk tipografi modern dan premium.
-   - Dukung font icon atau SVG inline yang bersih dan modern.
-2. Gaya & Estetika:
-   - Terapkan dark-mode modern yang mewah (background slate-950 atau zinc-950), gradien halus (radial glow blur), glassmorphism (backdrop-blur-md bg-slate-900/60 border border-slate-800/80).
-   - Pastikan hierarki visual kuat, tombol CTA mencolok dengan hover micro-interaction dan bayangan glow yang elegan.
-   - Responsif penuh untuk layar Mobile, Tablet, dan Desktop (menggunakan utility prefix sm:, md:, lg:, xl:).
-3. Konten Realistis:
-   - DILARANG menggunakan teks placeholder generik seperti "Lorem Ipsum". Buatkan teks copywriting bisnis yang nyata, menarik, dan selaras dengan niche klien.
-4. Format Output:
-   - Berikan HANYA kode HTML mentah (raw HTML code).
-   - Jangan menyertakan blok markdown kutipan seperti \`\`\`html atau \`\`\`. Output harus langsung siap dimasukkan ke dalam iframe.srcdoc.`;
-
-  const assemblerUserPrompt = `
-KLIEN MEMINTA:
-"${userPrompt}"
-
-UX BLUEPRINT (HASIL STEP 1 PLANNER):
-${JSON.stringify(blueprint, null, 2)}
-
-DATABASE KOMPONEN TERPILIH (HASIL STEP 2 RETRIEVAL):
-${componentSnippetsContext}
-
-INSTRUKSI PERAKITAN:
-Rakit dan selesaikan kode HTML5 lengkap dan responsif dengan Tailwind CSS yang mengimplementasikan urutan section dari blueprint di atas. Anda boleh mengadaptasi dan memodernisasi referensi komponen database yang diberikan agar menyatu harmonis dengan niche klien. Keluarkan HANYA kode HTML valid tanpa bungkus markdown.`;
-
-  const assemblerPayload = {
-    contents: [
-      {
-        role: "user",
-        parts: [{ text: assemblerUserPrompt }]
-      }
-    ],
-    systemInstruction: {
-      parts: [{ text: assemblerSystemInstruction }]
-    },
-    generationConfig: {
-      temperature: 0.35,
-      maxOutputTokens: 8192
-    }
-  };
-
-  let rawHtml = callGeminiREST(`${GEMINI_MODEL}:generateContent`, assemblerPayload, apiKey);
-  let cleanHtml = rawHtml.replace(/^```html\s*/i, "").replace(/^```\s*/i, "").replace(/\s*```$/i, "").trim();
-
-  return {
-    success: true,
-    htmlCode: cleanHtml,
-    blueprint: blueprint,
-    retrievedComponents: componentSummariesForClient
-  };
 }
 
 /**
- * ==============================================================================
- * STEP 3: MULTIMODAL VISION UI DISSECTOR
- * ==============================================================================
+ * 3. MENYIMPAN KOMPONEN BARU KE GOOGLE SHEET (POST ENDPOINT)
  */
-function analyzeUIFromImage(base64Data, mimeType, clientApiKey) {
-  const apiKey = resolveApiKey(clientApiKey);
-
-  if (!base64Data) {
-    throw new Error("Data gambar tidak boleh kosong.");
-  }
-
-  let cleanBase64 = base64Data;
-  if (base64Data.indexOf(",") !== -1) {
-    cleanBase64 = base64Data.split(",")[1];
-  }
-
-  const detectedMime = mimeType || "image/png";
-
-  const visionPrompt = `Anda adalah Lead UI/UX Reverse-Engineer.
-Bedah screenshot antarmuka pengguna (UI) ini secara mendalam dan rekonstruksi komponen utamanya menjadi komponen HTML berbasis Tailwind CSS yang identik dan modern.
-
-Keluarkan respon HANYA berupa JSON valid tanpa markdown dengan struktur:
-{
-  "name": "Nama komponen (misal: Modern Pricing Card atau Glassmorphic Hero)",
-  "category": "pilih salah satu: navbar | hero | features | pricing | testimonials | footer | card",
-  "tags": ["array", "kata", "kunci", "deskriptif"],
-  "designStyle": "deskripsi gaya visual (misal: Dark Minimalist dengan Aksen Emerald)",
-  "colorScheme": ["#hex1", "#hex2", "#hex3"],
-  "typographyNotes": "catatan gaya teks dan hierarki",
-  "html": "<div class=\\"...\\">...konten komponen HTML Tailwind CSS...</div>"
-}`;
-
-  const payload = {
-    contents: [
-      {
-        role: "user",
-        parts: [
-          { text: visionPrompt },
-          {
-            inline_data: {
-              mime_type: detectedMime,
-              data: cleanBase64
-            }
-          }
-        ]
-      }
-    ],
-    generationConfig: {
-      temperature: 0.25,
-      responseMimeType: "application/json"
-    }
-  };
-
+function doPost(e) {
   try {
-    const rawResult = callGeminiREST(`${GEMINI_MODEL}:generateContent`, payload, apiKey);
-    const parsedComponent = JSON.parse(rawResult);
+    const raw = e && e.postData ? e.postData.contents : "{}";
+    const item = JSON.parse(raw);
+    const sheet = getTargetSheet(e);
 
-    return {
-      success: true,
-      component: parsedComponent
-    };
+    // Inisialisasi Header otomatis jika sheet masih kosong sama sekali
+    if (sheet.getLastRow() === 0) {
+      sheet.appendRow([
+        "Timestamp",
+        "ID Komponen",
+        "Nama Komponen",
+        "Kategori",
+        "Kode Tailwind"
+      ]);
+      sheet.getRange(1, 1, 1, 5).setFontWeight("bold").setBackground("#f1f5f9");
+    }
+
+    const lastCol = sheet.getLastColumn();
+    const newId = item.id || `CMP-${Math.floor(100 + Math.random() * 900)}`;
+    const newName = item.name || "Komponen Kustom";
+    const newCategory = (item.category || "kustom").toLowerCase().trim();
+    const newCode = item.code || "";
+    const newIcon = item.icon || "extension";
+    const newTag = item.tag || "Kustom Anda";
+    const newMiniHtml = item.miniHtml || "";
+
+    // Sesuaikan format append baris dengan jumlah kolom sheet yang ada
+    if (lastCol <= 5) {
+      sheet.appendRow([
+        new Date(),
+        newId,
+        newName,
+        newCategory,
+        newCode
+      ]);
+    } else {
+      sheet.appendRow([
+        new Date(),
+        newId,
+        newName,
+        newCategory,
+        newIcon,
+        newTag,
+        newCode,
+        newMiniHtml
+      ]);
+    }
+
+    return ContentService.createTextOutput(JSON.stringify({
+      status: "success",
+      message: "Komponen berhasil ditambahkan ke Google Sheets.",
+      id: newId
+    })).setMimeType(ContentService.MimeType.JSON);
+
   } catch (err) {
-    Logger.log("Vision Dissector error: " + err.message);
-    throw new Error("Gagal menganalisis gambar UI: " + err.message);
+    return ContentService.createTextOutput(JSON.stringify({
+      status: "error",
+      message: err.message
+    })).setMimeType(ContentService.MimeType.JSON);
   }
-}
-
-/**
- * Menyimpan komponen baru hasil ekstraksi Vision ke UserProperties
- */
-function saveCustomComponent(component) {
-  if (!component || !component.name || !component.html) {
-    throw new Error("Data komponen tidak lengkap.");
-  }
-
-  try {
-    const userProps = PropertiesService.getUserProperties();
-    let currentCustom = [];
-    const currentJson = userProps.getProperty("CUSTOM_COMPONENTS");
-    if (currentJson) {
-      currentCustom = JSON.parse(currentJson);
-    }
-
-    component.id = "custom-" + Date.now();
-    currentCustom.unshift(component);
-
-    if (currentCustom.length > 20) {
-      currentCustom = currentCustom.slice(0, 20);
-    }
-
-    userProps.setProperty("CUSTOM_COMPONENTS", JSON.stringify(currentCustom));
-    return { success: true, componentId: component.id, message: "Komponen berhasil disimpan ke database pribadi!" };
-  } catch (e) {
-    Logger.log("Error saveCustomComponent: " + e.message);
-    throw new Error("Gagal menyimpan komponen: " + e.message);
-  }
-}
-
-function searchComponents(queryOrTags) {
-  return queryComponentsFromDb(queryOrTags);
-}
-
-function getComponentDatabase() {
-  return getAllComponents();
 }
