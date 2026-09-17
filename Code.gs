@@ -121,7 +121,7 @@ function getAllComponentsJson(e) {
         icon: compIcon,
         tag: compTag,
         code: compCode,
-        miniHtml: `<div class="w-full p-2 text-center text-[10px] font-bold rounded bg-slate-50 border border-slate-200 text-slate-700">${compName}</div>`
+        miniHtml: ""
       });
     }
 
