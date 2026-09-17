@@ -1182,9 +1182,23 @@
 
       <div class="flex flex-col gap-2.5">
         <div class="flex flex-col gap-1">
-          <label class="text-[11px] font-bold text-slate-700">Gemini Flash 3.6 API Key (Google AI Studio):</label>
+          <label class="text-[11px] font-bold text-slate-700">Gemini Flash API Key (Google AI Studio):</label>
           <input type="password" id="geminiApiKeyInput" class="w-full border border-slate-200 rounded-xl px-3 py-1.5 text-xs focus:border-primary focus:outline-none" placeholder="AIzaSy..."/>
-          <p class="text-[9px] text-slate-400">Tersimpan aman di LocalStorage browser.</p>
+          <p class="text-[9px] text-slate-400">Tersimpan aman di LocalStorage browser Anda.</p>
+        </div>
+
+        <div class="flex flex-col gap-1">
+          <label class="text-[11px] font-bold text-slate-700">Pilihan Model Gemini Vision:</label>
+          <select id="geminiModelInput" class="w-full border border-slate-200 rounded-xl px-3 py-1.5 text-xs bg-white focus:border-primary focus:outline-none">
+            <option value="auto">✨ Auto-Detect (Cari Model Flash Aktif Otomatis)</option>
+            <option value="gemini-3.8-flash">Gemini 3.8 Flash (High Fast)</option>
+            <option value="gemini-3.7-flash">Gemini 3.7 Flash (Medium Fast)</option>
+            <option value="gemini-3.6-flash">Gemini 3.6 Flash (Medium Fast)</option>
+            <option value="gemini-2.5-flash">Gemini 2.5 Flash</option>
+            <option value="gemini-2.0-flash">Gemini 2.0 Flash</option>
+            <option value="gemini-1.5-flash-latest">Gemini 1.5 Flash (Latest)</option>
+          </select>
+          <p class="text-[9px] text-slate-400">Sistem otomatis mendeteksi model yang aktif di Google AI Studio Anda.</p>
         </div>
 
         <div class="flex flex-col gap-1">
@@ -3069,7 +3083,45 @@
     let customAiDetectedComponents = [];
 
     async function analyzeWithGeminiVision(base64Data, mimeType, apiKey) {
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+      let selectedModel = localStorage.getItem("uiuxmaker_gemini_model") || "auto";
+
+      // 1. Kumpulkan kandidat model yang didukung akun pengguna
+      let candidateModels = [];
+      if (selectedModel && selectedModel !== "auto") {
+        candidateModels.push(selectedModel);
+      }
+
+      try {
+        const listRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`);
+        if (listRes.ok) {
+          const listJson = await listRes.json();
+          const validModels = (listJson.models || [])
+            .filter(m => m.supportedGenerationMethods && m.supportedGenerationMethods.includes("generateContent"))
+            .map(m => m.name.replace(/^models\//, ""));
+          
+          const preferredOrder = [
+            "gemini-3.8-flash", "gemini-3.7-flash", "gemini-3.6-flash", 
+            "gemini-2.5-flash", "gemini-2.0-flash", "gemini-2.0-flash-exp", 
+            "gemini-1.5-flash-latest", "gemini-1.5-flash-8b", "gemini-1.5-flash",
+            "gemini-2.5-pro", "gemini-pro"
+          ];
+          for (const p of preferredOrder) {
+            if (validModels.includes(p) && !candidateModels.includes(p)) {
+              candidateModels.push(p);
+            }
+          }
+          for (const m of validModels) {
+            if (!candidateModels.includes(m)) candidateModels.push(m);
+          }
+        }
+      } catch (e) {
+        console.warn("Gagal auto-discover models:", e);
+      }
+
+      if (candidateModels.length === 0) {
+        candidateModels = ["gemini-3.8-flash", "gemini-3.7-flash", "gemini-3.6-flash", "gemini-2.5-flash", "gemini-2.0-flash", "gemini-1.5-flash-latest"];
+      }
+
       const prompt = `Anda adalah AI UI/UX Architect kelas dunia. Analisis gambar antarmuka website/aplikasi ini.
 Pecah dan ekstrak seluruh komponen antarmuka individual yang terlihat di foto (misalnya: navbar, hero, catalog/fitur, pricing, testimonials, forms, footer, promo banner, dll).
 
@@ -3085,37 +3137,53 @@ Format setiap object:
   }
 ]`;
 
-      const response = await fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [{
-            parts: [
-              { text: prompt },
-              {
-                inline_data: {
-                  mime_type: mimeType,
-                  data: base64Data
-                }
+      let lastError = null;
+      for (const modelName of candidateModels) {
+        try {
+          const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`;
+          const response = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              contents: [{
+                parts: [
+                  { text: prompt },
+                  {
+                    inline_data: {
+                      mime_type: mimeType,
+                      data: base64Data
+                    }
+                  }
+                ]
+              }],
+              generationConfig: {
+                temperature: 0.1,
+                maxOutputTokens: 8192
               }
-            ]
-          }],
-          generationConfig: {
-            temperature: 0.1,
-            maxOutputTokens: 8192
-          }
-        })
-      });
+            })
+          });
 
-      if (!response.ok) {
-        const errJson = await response.json().catch(() => ({}));
-        throw new Error(errJson.error ? errJson.error.message : `HTTP ${response.status}`);
+          if (!response.ok) {
+            const errJson = await response.json().catch(() => ({}));
+            lastError = new Error(errJson.error ? errJson.error.message : `HTTP ${response.status} on ${modelName}`);
+            console.warn(`Percobaan model ${modelName} gagal:`, lastError.message);
+            continue;
+          }
+
+          const data = await response.json();
+          const textOutput = data.candidates?.[0]?.content?.parts?.[0]?.text || "";
+          const cleanJson = textOutput.replace(/```json/gi, '').replace(/```/g, '').trim();
+          const parsed = JSON.parse(cleanJson);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            return { components: parsed, modelUsed: modelName };
+          }
+        } catch (err) {
+          lastError = err;
+          console.warn(`Error on model ${modelName}:`, err);
+        }
       }
 
-      const data = await response.json();
-      const textOutput = data.candidates?.[0]?.content?.parts?.[0]?.text || "";
-      const cleanJson = textOutput.replace(/```json/gi, '').replace(/```/g, '').trim();
-      return JSON.parse(cleanJson);
+      throw lastError || new Error("Semua model Gemini yang dicoba tidak merespons.");
     }
 
     async function startScannerAnalysis() {
@@ -3132,7 +3200,7 @@ Format setiap object:
 
       // JIKA USER MEMASUKKAN GEMINI API KEY -> BEDAH REALTIME DENGAN GEMINI VISION!
       if (apiKey && apiKey.trim().length > 10) {
-        btn.innerHTML = `<span class="material-symbols-outlined text-[16px] animate-spin">sync</span><span>Gemini Flash Vision Menganalisis...</span>`;
+        btn.innerHTML = `<span class="material-symbols-outlined text-[16px] animate-spin">sync</span><span>Mendeteksi Model &amp; Menganalisis...</span>`;
         try {
           const currentImg = scannerImages[scannerActiveIndex] || scannerImages[0];
           const parts = currentImg.split(',');
@@ -3141,7 +3209,10 @@ Format setiap object:
           const base64Data = parts[1] || parts[0];
 
           const result = await analyzeWithGeminiVision(base64Data, mimeType, apiKey.trim());
-          if (result && Array.isArray(result) && result.length > 0) {
+          const compArray = result.components || result;
+          const usedModel = result.modelUsed || "Gemini Flash";
+
+          if (compArray && Array.isArray(compArray) && compArray.length > 0) {
             const badgeColors = {
               navbar: 'text-sky-700 bg-sky-100/80',
               hero: 'text-blue-700 bg-blue-100/80',
@@ -3153,13 +3224,13 @@ Format setiap object:
               banner: 'text-indigo-700 bg-indigo-100/80'
             };
 
-            customAiDetectedComponents = result.map((c, i) => {
+            customAiDetectedComponents = compArray.map((c, i) => {
               const cat = (c.category || 'kustom').toLowerCase().trim();
               return {
                 name: c.name || `Komponen Terdeteksi ${i+1}`,
                 category: cat,
                 match: c.match || "98%",
-                desc: c.desc || "Komponen visual diekstrak oleh Gemini Vision.",
+                desc: c.desc || `Komponen visual diekstrak oleh ${usedModel}.`,
                 badgeClass: badgeColors[cat] || 'text-indigo-700 bg-indigo-100/80',
                 wireframe: `<div class="w-28 h-12 rounded-xl bg-slate-100 border border-slate-200 p-1 flex items-center justify-center text-[8px] font-bold text-slate-700 text-center shadow-2xs shrink-0">${c.name || 'Komponen'}</div>`,
                 code: c.code || `<div class="p-6 bg-white rounded-2xl border">${c.name || 'Komponen'}</div>`
@@ -3176,7 +3247,7 @@ Format setiap object:
             currentDetectedArchetype = 'custom-ai';
             switchDetectedArchetype('custom-ai');
             openDetectedComponentsModal();
-            showToast(`✨ Sukses! Gemini Vision mengekstrak ${customAiDetectedComponents.length} komponen dari gambar Anda.`);
+            showToast(`✨ Sukses! ${usedModel} mengekstrak ${customAiDetectedComponents.length} komponen dari gambar Anda.`);
             return;
           }
         } catch (err) {
@@ -3946,6 +4017,7 @@ function syncComponentToDatabase(componentData) {
 
     function openApiKeyModal() {
       document.getElementById("geminiApiKeyInput").value = localStorage.getItem("uiuxmaker_gemini_api_key") || "";
+      document.getElementById("geminiModelInput").value = localStorage.getItem("uiuxmaker_gemini_model") || "auto";
       document.getElementById("gsheetUrlInput").value = localStorage.getItem("uiuxmaker_gsheet_url") || "";
       document.getElementById("apiKeyModal").classList.remove("hidden");
     }
@@ -3954,15 +4026,17 @@ function syncComponentToDatabase(componentData) {
     }
     function saveApiSettings() {
       const key = document.getElementById("geminiApiKeyInput").value.trim();
+      const model = document.getElementById("geminiModelInput").value;
       const gsheet = document.getElementById("gsheetUrlInput").value.trim();
       if (key) localStorage.setItem("uiuxmaker_gemini_api_key", key);
+      localStorage.setItem("uiuxmaker_gemini_model", model);
       if (gsheet) {
         localStorage.setItem("uiuxmaker_gsheet_url", gsheet);
       } else {
         localStorage.removeItem("uiuxmaker_gsheet_url");
       }
       closeApiKeyModal();
-      showToast("Pengaturan disimpan. Menghubungkan Google Sheets...");
+      showToast("Pengaturan disimpan. Menghubungkan Google Sheets & Model AI...");
       fetchComponentsFromSheet(true);
     }
 
