@@ -1,7 +1,7 @@
-#  UI Maker — Apple Studio Edition
+#  UI/UX Maker — AI Website Architect
 ### AI UI/UX Architect Generator (GitHub Pages Ready & Google Apps Script Output)
 
-Web App modern dengan standar **Apple Design System (macOS Tahoe & visionOS aesthetic)** untuk meracik antarmuka web responsif berbasis **Tailwind CSS**, didukung mesin multi-step agentic dan integrasi **Gemini 2.5 Flash API** (Text & Multimodal Vision).
+Web App modern dengan arsitektur **UI/UX Maker** untuk meracik antarmuka web responsif berbasis **Tailwind CSS**, didukung alur 4 tahap cerdas: Chat Intake WhatsApp, Live Builder interaktif, Varian Desain side-by-side, serta Vision Component Scanner & sinkronisasi Google Sheets.
 
 ---
 
