@@ -954,11 +954,15 @@
         </button>
       </div>
 
-      <!-- Topik / Archetype Switcher (Real SkyWings Detection vs Other Mocks) -->
+      <!-- Topik / Archetype Switcher (Realtime Gemini Vision vs Demo Presets) -->
       <div class="flex items-center gap-1.5 p-1 bg-slate-100/90 rounded-2xl overflow-x-auto text-xs font-semibold">
+        <button onclick="switchDetectedArchetype('custom-ai')" id="archBtnCustomAi" class="hidden px-3.5 py-1.5 rounded-xl bg-primary text-white shadow-xs font-bold flex items-center gap-1.5 shrink-0 transition-all">
+          <span>✨</span>
+          <span>Hasil AI Realtime (Gambar Kustom)</span>
+        </button>
         <button onclick="switchDetectedArchetype('skywings')" id="archBtnSkywings" class="px-3.5 py-1.5 rounded-xl bg-white text-primary shadow-xs font-bold flex items-center gap-1.5 shrink-0 transition-all">
           <span>✈️</span>
-          <span>Maskapai SkyWings (Hasil Scan Asli)</span>
+          <span>Maskapai SkyWings (Preset)</span>
         </button>
         <button onclick="switchDetectedArchetype('saas')" id="archBtnSaas" class="px-3.5 py-1.5 rounded-xl text-slate-600 hover:text-slate-900 flex items-center gap-1.5 shrink-0 transition-all">
           <span>💻</span>
@@ -967,6 +971,10 @@
         <button onclick="switchDetectedArchetype('cafe')" id="archBtnCafe" class="px-3.5 py-1.5 rounded-xl text-slate-600 hover:text-slate-900 flex items-center gap-1.5 shrink-0 transition-all">
           <span>☕</span>
           <span>Interior Cafe</span>
+        </button>
+        <button onclick="openApiKeyModal()" class="ml-auto px-2.5 py-1.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-primary text-[10px] font-bold flex items-center gap-1 shrink-0 transition-colors">
+          <span class="material-symbols-outlined text-[14px]">key</span>
+          <span>Hubungkan API Key</span>
         </button>
       </div>
 
@@ -3058,18 +3066,129 @@
       showToast("Foto dihapus dari Scanner.");
     }
 
-    function startScannerAnalysis() {
+    let customAiDetectedComponents = [];
+
+    async function analyzeWithGeminiVision(base64Data, mimeType, apiKey) {
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+      const prompt = `Anda adalah AI UI/UX Architect kelas dunia. Analisis gambar antarmuka website/aplikasi ini.
+Pecah dan ekstrak seluruh komponen antarmuka individual yang terlihat di foto (misalnya: navbar, hero, catalog/fitur, pricing, testimonials, forms, footer, promo banner, dll).
+
+KEMBALIKAN HANYA JSON VALID MURNI (Array of Objects) TANPA format markdown (\`\`\`json), TANPA penjelasan teks tambahan di luar JSON.
+Format setiap object:
+[
+  {
+    "name": "Nama Komponen Singkat (contoh: Minimalist Navbar atau Hero Header)",
+    "category": "navbar | hero | catalog | pricing | testimonials | forms | footer | banner",
+    "match": "98%",
+    "desc": "Penjelasan visual singkat 1-2 kalimat mengenai elemen, warna, dan layout komponen tersebut",
+    "code": "<section class=\\"...\\">Kode HTML Tailwind CSS lengkap dan mandiri yang persis sama bentuk, warna, dan proporsinya dengan yang tampak di foto</section>"
+  }
+]`;
+
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{
+            parts: [
+              { text: prompt },
+              {
+                inline_data: {
+                  mime_type: mimeType,
+                  data: base64Data
+                }
+              }
+            ]
+          }],
+          generationConfig: {
+            temperature: 0.1,
+            maxOutputTokens: 8192
+          }
+        })
+      });
+
+      if (!response.ok) {
+        const errJson = await response.json().catch(() => ({}));
+        throw new Error(errJson.error ? errJson.error.message : `HTTP ${response.status}`);
+      }
+
+      const data = await response.json();
+      const textOutput = data.candidates?.[0]?.content?.parts?.[0]?.text || "";
+      const cleanJson = textOutput.replace(/```json/gi, '').replace(/```/g, '').trim();
+      return JSON.parse(cleanJson);
+    }
+
+    async function startScannerAnalysis() {
       if (!scannerImages || scannerImages.length === 0) {
         showToast("Unggah atau tempel gambar desain terlebih dahulu untuk memindai!");
         return;
       }
       const laser = document.getElementById("scannerLaser");
       const btn = document.getElementById("btnStartScan");
+      const apiKey = localStorage.getItem("uiuxmaker_gemini_api_key");
 
       laser.classList.remove("hidden");
-      btn.innerHTML = `<span class="material-symbols-outlined text-[16px] animate-spin">sync</span><span>Gemini Flash 3.6 Memindai...</span>`;
       btn.disabled = true;
 
+      // JIKA USER MEMASUKKAN GEMINI API KEY -> BEDAH REALTIME DENGAN GEMINI VISION!
+      if (apiKey && apiKey.trim().length > 10) {
+        btn.innerHTML = `<span class="material-symbols-outlined text-[16px] animate-spin">sync</span><span>Gemini Flash Vision Menganalisis...</span>`;
+        try {
+          const currentImg = scannerImages[scannerActiveIndex] || scannerImages[0];
+          const parts = currentImg.split(',');
+          const mimeMatch = currentImg.match(/data:([^;]+);/);
+          const mimeType = mimeMatch ? mimeMatch[1] : "image/jpeg";
+          const base64Data = parts[1] || parts[0];
+
+          const result = await analyzeWithGeminiVision(base64Data, mimeType, apiKey.trim());
+          if (result && Array.isArray(result) && result.length > 0) {
+            const badgeColors = {
+              navbar: 'text-sky-700 bg-sky-100/80',
+              hero: 'text-blue-700 bg-blue-100/80',
+              catalog: 'text-emerald-700 bg-emerald-100/80',
+              pricing: 'text-purple-700 bg-purple-100/80',
+              testimonials: 'text-amber-700 bg-amber-100/80',
+              forms: 'text-rose-700 bg-rose-100/80',
+              footer: 'text-slate-700 bg-slate-200/80',
+              banner: 'text-indigo-700 bg-indigo-100/80'
+            };
+
+            customAiDetectedComponents = result.map((c, i) => {
+              const cat = (c.category || 'kustom').toLowerCase().trim();
+              return {
+                name: c.name || `Komponen Terdeteksi ${i+1}`,
+                category: cat,
+                match: c.match || "98%",
+                desc: c.desc || "Komponen visual diekstrak oleh Gemini Vision.",
+                badgeClass: badgeColors[cat] || 'text-indigo-700 bg-indigo-100/80',
+                wireframe: `<div class="w-28 h-12 rounded-xl bg-slate-100 border border-slate-200 p-1 flex items-center justify-center text-[8px] font-bold text-slate-700 text-center shadow-2xs shrink-0">${c.name || 'Komponen'}</div>`,
+                code: c.code || `<div class="p-6 bg-white rounded-2xl border">${c.name || 'Komponen'}</div>`
+              };
+            });
+
+            laser.classList.add("hidden");
+            btn.innerHTML = `<span class="material-symbols-outlined text-[17px]">biotech</span><span>Mulai Bedah Komponen AI</span>`;
+            btn.disabled = false;
+
+            const archBtnCustom = document.getElementById("archBtnCustomAi");
+            if (archBtnCustom) archBtnCustom.classList.remove("hidden");
+
+            currentDetectedArchetype = 'custom-ai';
+            switchDetectedArchetype('custom-ai');
+            openDetectedComponentsModal();
+            showToast(`✨ Sukses! Gemini Vision mengekstrak ${customAiDetectedComponents.length} komponen dari gambar Anda.`);
+            return;
+          }
+        } catch (err) {
+          console.warn("Gemini Vision API error:", err);
+          showToast(`⚠️ Gemini API: ${err.message || 'Gagal membedah'}. Menggunakan template preset.`);
+        }
+      } else {
+        showToast("💡 Info: Masukkan Gemini API Key di Pengaturan (ikon 🔑) untuk bedah gambar kustom realtime.");
+      }
+
+      // FALLBACK KE PRESET REFERENSI JIKA BELUM ADA API KEY ATAU ERROR
+      btn.innerHTML = `<span class="material-symbols-outlined text-[16px] animate-spin">sync</span><span>Memuat Hasil Analisis...</span>`;
       setTimeout(() => {
         laser.classList.add("hidden");
         btn.innerHTML = `<span class="material-symbols-outlined text-[17px]">biotech</span><span>Mulai Bedah Komponen AI</span>`;
@@ -3077,8 +3196,7 @@
         currentDetectedArchetype = 'skywings';
         switchDetectedArchetype('skywings');
         openDetectedComponentsModal();
-        showToast("Bedah selesai! 6 Komponen visual SkyWings berhasil diekstrak.");
-      }, 1100);
+      }, 1000);
     }
 
     let currentDetectedArchetype = 'skywings'; // Default to SkyWings from Gambar 5!
@@ -3086,9 +3204,14 @@
 
     function switchDetectedArchetype(arch) {
       currentDetectedArchetype = arch;
+      const btnCustom = document.getElementById("archBtnCustomAi");
       const btnSky = document.getElementById("archBtnSkywings");
       const btnSaas = document.getElementById("archBtnSaas");
       const btnCafe = document.getElementById("archBtnCafe");
+
+      if (btnCustom) btnCustom.className = arch === 'custom-ai'
+        ? "px-3.5 py-1.5 rounded-xl bg-primary text-white shadow-xs font-bold flex items-center gap-1.5 shrink-0 transition-all"
+        : "px-3.5 py-1.5 rounded-xl text-slate-600 hover:text-slate-900 flex items-center gap-1.5 shrink-0 transition-all";
 
       if (btnSky) btnSky.className = arch === 'skywings' 
         ? "px-3.5 py-1.5 rounded-xl bg-white text-primary shadow-xs font-bold flex items-center gap-1.5 shrink-0 transition-all"
@@ -3126,7 +3249,12 @@
         return;
       }
 
-      if (currentDetectedArchetype === 'skywings') {
+      if (currentDetectedArchetype === 'custom-ai' && customAiDetectedComponents.length > 0) {
+        if (titleEl) titleEl.textContent = `Hasil Bedah AI Realtime: ${customAiDetectedComponents.length} Komponen Kustom Ditemukan`;
+        if (subtitleEl) subtitleEl.textContent = `Gemini Flash 1.5 menganalisis gambar kustom Anda secara dinamis dan mengekstrak komponen antarmuka individual.`;
+        if (badgeEl) badgeEl.textContent = `${customAiDetectedComponents.length} Komponen Terisolasi`;
+        currentDetectedComponents = customAiDetectedComponents;
+      } else if (currentDetectedArchetype === 'skywings') {
         // HASIL AKURAT 100% UNTUK GAMBAR 5 (SKYWINGS AIRLINE & TRAVEL)
         if (titleEl) titleEl.textContent = "Hasil Bedah: Maskapai SkyWings & Travel Booking (Gambar 5)";
         if (subtitleEl) subtitleEl.textContent = "Gemini Flash 3.6 membedah foto Gambar 5: mendeteksi maskapai penerbangan, armada Boeing di awan, destinasi populer $47, dan alur booking tiket.";
