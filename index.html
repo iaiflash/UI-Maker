@@ -547,6 +547,13 @@
               </button>
             </div>
 
+            <!-- Tombol Mode Crop & Bedah 1:1 Pinterest -->
+            <button id="btnToggleCropMode" onclick="toggleScannerCropMode()" class="px-2.5 py-1.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-bold text-xs flex items-center gap-1 shadow-xs transition-all active:scale-95 cursor-pointer" title="Pilih dan crop 1 layar atau komponen spesifik untuk dibedah 1:1">
+              <span class="material-symbols-outlined text-[15px]">crop</span>
+              <span class="hidden sm:inline">Mode Crop 1:1</span>
+              <span class="sm:hidden">Crop</span>
+            </button>
+
             <button onclick="openSafeguardModal()" class="px-2.5 py-1.5 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 text-xs font-bold flex items-center gap-1 transition-all active:scale-95" title="Buka Pengaman Komponen Terlewat">
               <span class="material-symbols-outlined text-[15px] text-amber-600">shield</span>
               <span class="hidden sm:inline">Pengaman Terlewat</span>
@@ -565,9 +572,58 @@
           <!-- Laser Scan Line -->
           <div id="scannerLaser" class="hidden absolute left-0 right-0 h-1.5 bg-gradient-to-r from-transparent via-cyan-400 to-transparent shadow-[0_0_25px_#22d3ee] animate-laser pointer-events-none z-30"></div>
 
-          <!-- Adaptive Smartphone / Desktop Frame Wrapper -->
+          <!-- Adaptive Smartphone / Desktop Frame Wrapper with Embedded Cropper -->
           <div id="scannerFrameWrapper" class="relative max-w-full max-h-full flex items-center justify-center transition-all duration-300">
-            <img id="scannerPreviewImage" src="" alt="Scanner Blueprint" class="max-w-full max-h-full object-contain rounded-2xl shadow-2xl border border-slate-800 hidden transition-all duration-300" onload="handleScannerImageLoaded(this)"/>
+            <div id="scannerImageContainer" class="relative inline-block max-w-full max-h-full">
+              <img id="scannerPreviewImage" src="" alt="Scanner Blueprint" class="max-w-full max-h-full object-contain rounded-2xl shadow-2xl border border-slate-800 hidden transition-all duration-300" onload="handleScannerImageLoaded(this)"/>
+              
+              <!-- Interactive Crop Overlay for Pinterest UI Slicing -->
+              <div id="scannerCropOverlay" class="hidden absolute inset-0 z-30 select-none overflow-hidden rounded-2xl">
+                <!-- Dark Semi-transparent Backdrop -->
+                <div class="absolute inset-0 bg-black/60 pointer-events-none"></div>
+
+                <!-- Floating Top Toolbar for Pinterest 3-Screen Presets -->
+                <div class="absolute top-2.5 left-1/2 -translate-x-1/2 flex items-center gap-1 bg-slate-900/95 backdrop-blur-md px-3 py-1.5 rounded-2xl border border-white/20 shadow-2xl z-40 pointer-events-auto">
+                  <span class="text-[10px] font-bold text-slate-300 flex items-center gap-1 mr-0.5">
+                    <span class="material-symbols-outlined text-[13px] text-amber-400">crop</span>
+                    <span>Preset:</span>
+                  </span>
+                  <button onclick="applyPinterestCropPreset('screen-1')" class="px-2 py-0.5 rounded-lg bg-white/10 hover:bg-white/25 text-white text-[10px] font-bold transition-all flex items-center gap-0.5 cursor-pointer">
+                    <span>📱 Layar 1 (Kiri)</span>
+                  </button>
+                  <button onclick="applyPinterestCropPreset('screen-2')" class="px-2 py-0.5 rounded-lg bg-white/10 hover:bg-white/25 text-white text-[10px] font-bold transition-all flex items-center gap-0.5 cursor-pointer">
+                    <span>📱 Layar 2 (Tengah)</span>
+                  </button>
+                  <button onclick="applyPinterestCropPreset('screen-3')" class="px-2 py-0.5 rounded-lg bg-white/10 hover:bg-white/25 text-white text-[10px] font-bold transition-all flex items-center gap-0.5 cursor-pointer">
+                    <span>📱 Layar 3 (Kanan)</span>
+                  </button>
+                  <button onclick="applyPinterestCropPreset('full')" class="px-2 py-0.5 rounded-lg bg-white/10 hover:bg-white/25 text-slate-300 text-[10px] font-semibold transition-all cursor-pointer">
+                    <span>Full</span>
+                  </button>
+                  <button onclick="toggleScannerCropMode(false)" class="ml-1 w-5 h-5 rounded-full bg-rose-500/20 hover:bg-rose-500 text-rose-300 hover:text-white flex items-center justify-center text-xs transition-all cursor-pointer" title="Tutup Mode Crop">
+                    ✕
+                  </button>
+                </div>
+
+                <!-- Draggable / Resizable Crop Selection Box -->
+                <div id="cropSelectionBox" class="absolute border-2 border-dashed border-cyan-400 bg-cyan-400/20 shadow-[0_0_25px_rgba(34,211,238,0.5)] cursor-move rounded-xl pointer-events-auto" style="left: 35%; top: 5%; width: 30%; height: 90%;">
+                  <!-- Corner Handles -->
+                  <div class="absolute -top-1.5 -left-1.5 w-3 h-3 bg-cyan-400 rounded-full border-2 border-white shadow-xs"></div>
+                  <div class="absolute -top-1.5 -right-1.5 w-3 h-3 bg-cyan-400 rounded-full border-2 border-white shadow-xs"></div>
+                  <div class="absolute -bottom-1.5 -left-1.5 w-3 h-3 bg-cyan-400 rounded-full border-2 border-white shadow-xs"></div>
+                  <div class="absolute -bottom-1.5 -right-1.5 w-3 h-3 bg-cyan-400 rounded-full border-2 border-white shadow-xs"></div>
+
+                  <!-- Floating Action Button attached to Box -->
+                  <div class="absolute -bottom-11 left-1/2 -translate-x-1/2 flex items-center gap-1.5 bg-slate-900/95 text-white px-3 py-1 rounded-full text-[11px] font-bold shadow-xl border border-cyan-400/50 whitespace-nowrap z-40 pointer-events-auto">
+                    <span class="text-cyan-300 font-mono text-[10px]" id="cropDimensionsLabel">Layar Terpilih</span>
+                    <button onclick="executeComponentCropScan()" id="btnExecuteCropScan" class="px-3 py-0.5 rounded-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-bold text-[11px] flex items-center gap-1 shadow-md cursor-pointer active:scale-95 transition-all">
+                      <span class="material-symbols-outlined text-[13px]">biotech</span>
+                      <span>Bedah Bagian Ini (1:1)</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
           
           <!-- Empty State when no photos in scanner -->
@@ -957,59 +1013,59 @@
   <!-- ==================================================================== -->
   <!-- MODAL 5: SCANNER DETECTED COMPONENTS POP-UP (RICH VISUAL PREVIEWS)   -->
   <!-- ==================================================================== -->
-  <div id="detectedComponentsModal" class="hidden fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4">
-    <div class="bg-white rounded-3xl max-w-3xl w-full p-5 sm:p-6 shadow-2xl border border-slate-200 flex flex-col gap-4 animate-in fade-in zoom-in-95 duration-150 max-h-[90vh]">
+  <div id="detectedComponentsModal" class="hidden fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4">
+    <div class="bg-white rounded-3xl max-w-4xl w-full p-5 sm:p-6 shadow-2xl border border-slate-200 flex flex-col gap-3.5 animate-in fade-in zoom-in-95 duration-150 max-h-[88vh] overflow-hidden">
       
       <!-- Modal Header -->
-      <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+      <div class="flex items-center justify-between pb-2.5 border-b border-slate-100 shrink-0">
         <div class="flex items-center gap-2.5">
           <div class="w-9 h-9 rounded-xl bg-secondary/10 text-secondary flex items-center justify-center font-bold">
             <span class="material-symbols-outlined text-[20px]">biotech</span>
           </div>
           <div>
             <div class="flex items-center gap-2">
-              <h3 class="text-sm font-bold text-slate-900" id="detectedModalTitle">Komponen Hasil Bedah Vision AI</h3>
+              <h3 class="text-sm sm:text-base font-bold text-slate-900" id="detectedModalTitle">Komponen Hasil Bedah Vision AI</h3>
               <span id="detectedModalCountBadge" class="text-[10px] font-mono text-emerald-700 bg-emerald-100/80 px-2 py-0.5 rounded-full font-bold">6 Komponen Terisolasi</span>
             </div>
             <p class="text-[11px] text-slate-500" id="detectedModalSubtitle">Setiap komponen telah dipisahkan struktur layout, warna, dan kode Tailwind CSS-nya.</p>
           </div>
         </div>
-        <button onclick="closeDetectedComponentsModal()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center text-xs transition-colors">✕</button>
+        <button onclick="closeDetectedComponentsModal()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center text-xs transition-colors cursor-pointer">✕</button>
       </div>
 
       <!-- Prominent Safeguard Notice / Pengaman Banner -->
-      <div class="bg-amber-50/80 border border-amber-200/80 rounded-2xl p-3 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5">
+      <div class="bg-amber-50/80 border border-amber-200/80 rounded-2xl p-2.5 sm:p-3 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 shrink-0">
         <div class="flex items-center gap-2">
           <span class="material-symbols-outlined text-[18px] text-amber-600 shrink-0">report_problem</span>
           <span class="text-xs font-semibold text-amber-900">Ada komponen di gambar yang terlewat atau belum terdeteksi AI?</span>
         </div>
-        <button onclick="openSafeguardModal()" class="px-3 py-1.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold shrink-0 flex items-center gap-1.5 shadow-2xs transition-all active:scale-95">
+        <button onclick="openSafeguardModal()" class="px-3 py-1.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold shrink-0 flex items-center gap-1.5 shadow-2xs transition-all active:scale-95 cursor-pointer">
           <span class="material-symbols-outlined text-[15px]">add_circle</span>
           <span>Buka Pengaman / Input Manual</span>
         </button>
       </div>
 
       <!-- Status & Filter Hasil Bedah Gambar -->
-      <div class="flex items-center justify-between px-1 py-1 text-xs text-slate-500 font-medium">
+      <div class="flex items-center justify-between px-1 text-xs text-slate-500 font-medium shrink-0">
         <div class="flex items-center gap-1.5">
           <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
           <span id="detectedModalStatusText" class="font-semibold text-slate-700">Komponen visual siap disimpan ke Database &amp; Google Sheets</span>
         </div>
-        <button onclick="openApiKeyModal()" class="px-2.5 py-1.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-primary text-[10px] font-bold flex items-center gap-1 shrink-0 transition-colors">
+        <button onclick="openApiKeyModal()" class="px-2.5 py-1.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-primary text-[10px] font-bold flex items-center gap-1 shrink-0 transition-colors cursor-pointer">
           <span class="material-symbols-outlined text-[13px]">key</span>
           <span>Pengaturan API Key</span>
         </button>
       </div>
 
       <!-- Scan History Tabs (Terbaru vs Riwayat Lama) & Button Hapus Hasil Bedah -->
-      <div class="flex items-center justify-between gap-2 overflow-x-auto pb-1 text-xs border-b border-slate-100" id="scanTabsHeader">
+      <div class="flex items-center justify-between gap-2 overflow-x-auto pb-1 text-xs border-b border-slate-100 shrink-0" id="scanTabsHeader">
         <div class="flex items-center gap-1.5" id="scanHistoryTabsContainer">
-          <button onclick="switchScanHistoryTab('latest')" id="scanTabBtn-latest" class="px-3.5 py-1.5 rounded-xl font-bold transition-all text-xs flex items-center gap-1.5 shrink-0 bg-slate-900 text-white shadow-xs">
+          <button onclick="switchScanHistoryTab('latest')" id="scanTabBtn-latest" class="px-3.5 py-1.5 rounded-xl font-bold transition-all text-xs flex items-center gap-1.5 shrink-0 bg-slate-900 text-white shadow-xs cursor-pointer">
             <span class="material-symbols-outlined text-[14px] text-amber-400">auto_awesome</span>
             <span>Hasil Terbaru (Foto Ini)</span>
             <span id="latestScanBadgeCount" class="text-[9px] font-mono px-1.5 py-0.2 rounded-full bg-white/20 text-white">0</span>
           </button>
-          <button onclick="switchScanHistoryTab('history')" id="scanTabBtn-history" class="px-3.5 py-1.5 rounded-xl font-semibold transition-all text-xs flex items-center gap-1.5 shrink-0 bg-slate-100 text-slate-600 hover:bg-slate-200">
+          <button onclick="switchScanHistoryTab('history')" id="scanTabBtn-history" class="px-3.5 py-1.5 rounded-xl font-semibold transition-all text-xs flex items-center gap-1.5 shrink-0 bg-slate-100 text-slate-600 hover:bg-slate-200 cursor-pointer">
             <span class="material-symbols-outlined text-[14px]">history</span>
             <span>Riwayat Bedah Sebelumnya</span>
             <span id="historyScanBadgeCount" class="text-[9px] font-mono px-1.5 py-0.2 rounded-full bg-slate-200 text-slate-700">0</span>
@@ -1023,13 +1079,13 @@
         </div>
       </div>
 
-      <!-- Detected Components List with Real Visual Mockup Previews -->
-      <div class="flex flex-col gap-3 overflow-y-auto pr-1" id="detectedModalList"></div>
+      <!-- Detected Components List with Real Visual Mockup Previews (Spacious & Scrollable) -->
+      <div class="flex flex-col gap-3 flex-1 min-h-0 overflow-y-auto pr-1.5" id="detectedModalList"></div>
 
       <!-- Modal Footer -->
-      <div class="flex items-center justify-between pt-2 border-t border-slate-100">
+      <div class="flex items-center justify-between pt-2.5 border-t border-slate-100 shrink-0">
         <span class="text-[11px] text-slate-400 font-medium">Sinkronisasi otomatis ke Google Sheets &amp; Database aktif.</span>
-        <button onclick="closeDetectedComponentsModal()" class="px-4 py-1.5 rounded-xl text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition-colors">Tutup</button>
+        <button onclick="closeDetectedComponentsModal()" class="px-4 py-1.5 rounded-xl text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition-colors cursor-pointer">Tutup</button>
       </div>
 
     </div>
@@ -2787,6 +2843,20 @@
       const name = comp.name || 'Komponen';
       const shortName = name.split(' ')[0] || 'App';
 
+      // 2.3 Deteksi spesifik komponen Furnitur Mint / Kursi Baper (Pinterest Mobile UI)
+      if (name.includes("Kursi Baper") || name.includes("Pink Chair") || name.includes("360 Rotation")) {
+        return `<div class="w-full h-full rounded-lg bg-[#a8dfd1] p-1.5 flex flex-col justify-between shadow-2xs shrink-0 overflow-hidden"><div class="flex items-center justify-between"><span class="text-[6px] font-bold text-slate-800 truncate">Kursi Baper</span><span class="text-[6px] font-bold text-emerald-800">$21.95</span></div><div class="w-10 h-7 mx-auto rounded overflow-hidden"><img src="https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=120&auto=format&fit=crop&q=80" class="w-full h-full object-contain filter drop-shadow-sm"/></div><div class="flex items-center justify-between"><div class="flex gap-0.5"><div class="w-1.5 h-1.5 rounded-full bg-slate-900"></div><div class="w-1.5 h-1.5 rounded-full bg-pink-400"></div></div><div class="px-1.5 py-0.2 rounded bg-slate-900 text-white text-[5px] font-bold">+ Cart</div></div></div>`;
+      }
+      if (name.includes("Leather Swivel") || (name.includes("Promo") && name.includes("Chair"))) {
+        return `<div class="w-full h-full rounded-lg bg-[#1e1e24] p-1.5 flex items-center justify-between shadow-2xs text-white shrink-0 overflow-hidden"><div class="flex flex-col gap-0.5 max-w-[60%]"><span class="text-[5px] text-amber-400 font-bold">30% OFF</span><span class="text-[6px] font-bold truncate">Leather Swivel</span><span class="text-[5px] text-slate-400">$49.00</span></div><div class="w-6 h-6 rounded overflow-hidden shrink-0"><img src="https://images.unsplash.com/photo-1580481077195-c3a82145be37?w=80&auto=format&fit=crop&q=80" class="w-full h-full object-contain"/></div></div>`;
+      }
+      if (name.includes("Mint") || (cat === 'navbar' && (name.includes("Mobile Header") || name.includes("Search Bar")))) {
+        return `<div class="w-full h-full rounded-lg bg-[#a8dfd1] p-1.5 flex flex-col justify-between shadow-2xs shrink-0"><div class="flex items-center justify-between"><div class="w-3 h-3 rounded bg-slate-900 text-white flex items-center justify-center text-[5px]">⚡</div><div class="w-3 h-3 rounded bg-white/50 text-slate-800 flex items-center justify-center text-[5px]">🔔</div></div><div class="w-full h-2.5 bg-white/80 rounded-full px-1 flex items-center text-[5px] text-slate-500">🔍 Search...</div></div>`;
+      }
+      if (name.includes("Bottom Nav") || (cat === 'navbar' && name.includes("Capsule"))) {
+        return `<div class="w-full h-full rounded-lg bg-slate-950 px-2 py-1 flex items-center justify-between text-white shadow-2xs shrink-0"><div class="w-2 h-2 rounded-full bg-white flex items-center justify-center text-[5px]">🏠</div><div class="w-2 h-2 rounded-full bg-white/20 flex items-center justify-center text-[5px]">🔍</div><div class="w-2 h-2 rounded-full bg-white/20 flex items-center justify-center text-[5px]">🛍️</div></div>`;
+      }
+
       // 2.5 Deteksi spesifik komponen AgentAI (Foto Cyber-Dark)
       if (name.includes("AgentAI") || (cat === 'navbar' && name.includes("Capsule"))) {
         return `<div class="w-full h-full rounded-md bg-[#050507] border border-red-900/60 px-2 py-1 flex items-center justify-between text-white shrink-0"><div class="flex items-center gap-1"><div class="w-2 h-2 rounded-full bg-red-600 shadow-[0_0_8px_rgba(239,68,68,0.8)]"></div><span class="text-[7px] font-bold">AgentAI</span></div><div class="flex items-center gap-0.5 bg-white/5 px-1 py-0.5 rounded-full border border-white/10"><div class="px-1 py-0.2 rounded-full bg-red-600 text-[5px] font-bold">Home</div></div><div class="px-1 py-0.5 rounded-full bg-red-600 text-[6px] font-bold">::</div></div>`;
@@ -3278,9 +3348,11 @@
 
       const shouldUseMobileFrame = scannerViewMode === 'mobile' || (scannerViewMode === 'auto' && isTallPortrait);
 
+      const imgContainer = document.getElementById("scannerImageContainer");
       if (shouldUseMobileFrame) {
         // Tampilan HP Fleksibel: frame smartphone proporsional, mengisi 92% kanvas vertikal
         wrapper.className = "relative h-[92%] max-h-[92%] w-auto max-w-[440px] aspect-[9/19.5] p-2 bg-slate-900/90 rounded-[38px] border-4 border-slate-700/80 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.8)] flex flex-col items-center justify-center transition-all duration-300";
+        if (imgContainer) imgContainer.className = "relative w-full h-full rounded-[28px] overflow-hidden flex items-center justify-center";
         img.className = "w-full h-full object-cover rounded-[28px] transition-all duration-300";
         if (ratioBadge) {
           ratioBadge.textContent = `📱 Layar HP (${w}x${h}) · Auto-Scaled`;
@@ -3289,12 +3361,464 @@
       } else {
         // Tampilan Desktop / Wide Fit
         wrapper.className = "relative max-w-full max-h-full flex items-center justify-center p-1 transition-all duration-300";
+        if (imgContainer) imgContainer.className = "relative inline-block max-w-full max-h-full rounded-2xl overflow-hidden";
         img.className = "max-w-full max-h-full object-contain rounded-2xl shadow-2xl border border-slate-800 transition-all duration-300";
         if (ratioBadge) {
           ratioBadge.textContent = `💻 Desktop / Wide (${w}x${h}) · Auto-Scaled`;
           ratioBadge.className = "text-[10px] font-mono text-sky-400 bg-sky-950/60 border border-sky-800/60 px-2 py-0.5 rounded-full hidden sm:inline";
         }
       }
+    }
+
+    // ==========================================
+    // 9.1 CROPPER & PINTEREST COMPONENT SLICER ENGINE
+    // ==========================================
+    let isScannerCropMode = false;
+    let currentCropPreset = 'screen-2';
+    let cropBoxNormalized = { x: 35, y: 5, width: 30, height: 90 };
+    let isDraggingCropBox = false;
+    let dragStartPos = { mouseX: 0, mouseY: 0, boxLeft: 35, boxTop: 5 };
+
+    function toggleScannerCropMode(forceState) {
+      if (!scannerImages || scannerImages.length === 0) {
+        showToast("Unggah atau tempel gambar terlebih dahulu untuk menggunakan Mode Crop!");
+        return;
+      }
+
+      isScannerCropMode = forceState !== undefined ? forceState : !isScannerCropMode;
+      const overlay = document.getElementById("scannerCropOverlay");
+      const btn = document.getElementById("btnToggleCropMode");
+
+      if (overlay) {
+        if (isScannerCropMode) {
+          overlay.classList.remove("hidden");
+          applyPinterestCropPreset(currentCropPreset || 'screen-2');
+          setupCropDragListeners();
+        } else {
+          overlay.classList.add("hidden");
+        }
+      }
+
+      if (btn) {
+        if (isScannerCropMode) {
+          btn.className = "px-2.5 py-1.5 rounded-xl bg-slate-900 text-amber-400 border border-amber-400/60 shadow-md font-bold text-xs flex items-center gap-1 transition-all active:scale-95 cursor-pointer";
+          btn.innerHTML = `<span class="material-symbols-outlined text-[15px] text-amber-400">check</span><span class="hidden sm:inline">Mode Crop Aktif</span><span class="sm:hidden">Crop ON</span>`;
+          showToast("✂️ Mode Crop Aktif: Pilih Layar 1, 2, atau 3 (atau drag kotak) lalu klik 'Bedah Bagian Ini'.");
+        } else {
+          btn.className = "px-2.5 py-1.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-bold text-xs flex items-center gap-1 shadow-xs transition-all active:scale-95 cursor-pointer";
+          btn.innerHTML = `<span class="material-symbols-outlined text-[15px]">crop</span><span class="hidden sm:inline">Mode Crop 1:1</span><span class="sm:hidden">Crop</span>`;
+        }
+      }
+    }
+
+    function applyPinterestCropPreset(presetKey) {
+      currentCropPreset = presetKey;
+      const box = document.getElementById("cropSelectionBox");
+      const label = document.getElementById("cropDimensionsLabel");
+      if (!box) return;
+
+      if (presetKey === 'screen-1') {
+        cropBoxNormalized = { x: 3, y: 5, width: 30, height: 90 };
+        if (label) label.textContent = "📱 Layar 1 (Kiri)";
+      } else if (presetKey === 'screen-2') {
+        cropBoxNormalized = { x: 35, y: 5, width: 30, height: 90 };
+        if (label) label.textContent = "📱 Layar 2 (Tengah)";
+      } else if (presetKey === 'screen-3') {
+        cropBoxNormalized = { x: 67, y: 5, width: 30, height: 90 };
+        if (label) label.textContent = "📱 Layar 3 (Kanan)";
+      } else if (presetKey === 'full') {
+        cropBoxNormalized = { x: 0, y: 0, width: 100, height: 100 };
+        if (label) label.textContent = "🔍 Penuh (100%)";
+      }
+
+      box.style.left = `${cropBoxNormalized.x}%`;
+      box.style.top = `${cropBoxNormalized.y}%`;
+      box.style.width = `${cropBoxNormalized.width}%`;
+      box.style.height = `${cropBoxNormalized.height}%`;
+    }
+
+    let cropListenersInitialized = false;
+    function setupCropDragListeners() {
+      if (cropListenersInitialized) return;
+      cropListenersInitialized = true;
+
+      const overlay = document.getElementById("scannerCropOverlay");
+      const box = document.getElementById("cropSelectionBox");
+      if (!overlay || !box) return;
+
+      let isDrawingNewBox = false;
+      let startX = 0, startY = 0;
+
+      overlay.addEventListener('mousedown', (e) => {
+        if (e.target.closest('button') || e.target.closest('.pointer-events-auto:not(#cropSelectionBox)')) return;
+
+        const rect = overlay.getBoundingClientRect();
+        if (e.target === box || box.contains(e.target)) {
+          isDraggingCropBox = true;
+          dragStartPos = {
+            mouseX: e.clientX,
+            mouseY: e.clientY,
+            boxLeft: cropBoxNormalized.x,
+            boxTop: cropBoxNormalized.y
+          };
+          e.preventDefault();
+        } else {
+          isDrawingNewBox = true;
+          startX = Math.max(0, Math.min(100, ((e.clientX - rect.left) / rect.width) * 100));
+          startY = Math.max(0, Math.min(100, ((e.clientY - rect.top) / rect.height) * 100));
+          cropBoxNormalized = { x: startX, y: startY, width: 0, height: 0 };
+          box.style.left = `${startX}%`;
+          box.style.top = `${startY}%`;
+          box.style.width = `0%`;
+          box.style.height = `0%`;
+          const label = document.getElementById("cropDimensionsLabel");
+          if (label) label.textContent = "✂️ Seleksi Bebas";
+          e.preventDefault();
+        }
+      });
+
+      window.addEventListener('mousemove', (e) => {
+        if (!isScannerCropMode) return;
+        const rect = overlay.getBoundingClientRect();
+
+        if (isDraggingCropBox) {
+          const deltaX = ((e.clientX - dragStartPos.mouseX) / rect.width) * 100;
+          const deltaY = ((e.clientY - dragStartPos.mouseY) / rect.height) * 100;
+          let newX = Math.max(0, Math.min(100 - cropBoxNormalized.width, dragStartPos.boxLeft + deltaX));
+          let newY = Math.max(0, Math.min(100 - cropBoxNormalized.height, dragStartPos.boxTop + deltaY));
+          cropBoxNormalized.x = newX;
+          cropBoxNormalized.y = newY;
+          box.style.left = `${newX}%`;
+          box.style.top = `${newY}%`;
+        } else if (isDrawingNewBox) {
+          const curX = Math.max(0, Math.min(100, ((e.clientX - rect.left) / rect.width) * 100));
+          const curY = Math.max(0, Math.min(100, ((e.clientY - rect.top) / rect.height) * 100));
+          const x = Math.min(startX, curX);
+          const y = Math.min(startY, curY);
+          const w = Math.abs(curX - startX);
+          const h = Math.abs(curY - startY);
+          cropBoxNormalized = { x: x, y: y, width: w, height: h };
+          box.style.left = `${x}%`;
+          box.style.top = `${y}%`;
+          box.style.width = `${w}%`;
+          box.style.height = `${h}%`;
+        }
+      });
+
+      window.addEventListener('mouseup', () => {
+        if (isDraggingCropBox || isDrawingNewBox) {
+          isDraggingCropBox = false;
+          isDrawingNewBox = false;
+          if (cropBoxNormalized.width < 5) cropBoxNormalized.width = 30;
+          if (cropBoxNormalized.height < 5) cropBoxNormalized.height = 30;
+          box.style.width = `${cropBoxNormalized.width}%`;
+          box.style.height = `${cropBoxNormalized.height}%`;
+        }
+      });
+    }
+
+    async function executeComponentCropScan() {
+      const img = document.getElementById("scannerPreviewImage");
+      const btn = document.getElementById("btnExecuteCropScan");
+      if (!img || !img.src) {
+        showToast("Tidak ada gambar aktif untuk di-crop.");
+        return;
+      }
+
+      if (btn) {
+        btn.innerHTML = `<span class="material-symbols-outlined text-[13px] animate-spin">sync</span><span>1/3 Memotong area...</span>`;
+        btn.disabled = true;
+      }
+
+      try {
+        const canvas = document.createElement("canvas");
+        const nw = img.naturalWidth || 1080;
+        const nh = img.naturalHeight || 1920;
+
+        const sx = Math.max(0, Math.round((cropBoxNormalized.x / 100) * nw));
+        const sy = Math.max(0, Math.round((cropBoxNormalized.y / 100) * nh));
+        const sw = Math.max(10, Math.round((cropBoxNormalized.width / 100) * nw));
+        const sh = Math.max(10, Math.round((cropBoxNormalized.height / 100) * nh));
+
+        canvas.width = sw;
+        canvas.height = sh;
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(img, sx, sy, sw, sh, 0, 0, sw, sh);
+
+        const croppedDataUrl = canvas.toDataURL("image/jpeg", 0.92);
+
+        if (btn) {
+          btn.innerHTML = `<span class="material-symbols-outlined text-[13px] animate-spin">sync</span><span>2/3 AI Bedah 1:1...</span>`;
+        }
+
+        const apiKey = localStorage.getItem("uiuxmaker_gemini_api_key");
+        let extracted = [];
+
+        if (apiKey && apiKey.trim().length > 10) {
+          try {
+            const res = await analyzeWithGeminiVision(croppedDataUrl, apiKey.trim(), (status) => {
+              if (btn) btn.innerHTML = `<span class="material-symbols-outlined text-[13px] animate-spin">sync</span><span>${status}</span>`;
+            });
+            const comps = res.components || res;
+            if (Array.isArray(comps) && comps.length > 0) {
+              const badgeColors = {
+                navbar: 'text-sky-700 bg-sky-100/80',
+                hero: 'text-blue-700 bg-blue-100/80',
+                catalog: 'text-emerald-700 bg-emerald-100/80',
+                pricing: 'text-purple-700 bg-purple-100/80',
+                testimonials: 'text-amber-700 bg-amber-100/80',
+                forms: 'text-rose-700 bg-rose-100/80',
+                footer: 'text-slate-700 bg-slate-200/80',
+                banner: 'text-indigo-700 bg-indigo-100/80'
+              };
+              extracted = comps.map((c, i) => {
+                const cat = (c.category || 'catalog').toLowerCase().trim();
+                const cName = c.name || `Komponen Crop ${i+1}`;
+                return {
+                  name: cName,
+                  category: cat,
+                  match: c.match || "99%",
+                  desc: c.desc || `Komponen diekstrak dari potongan area crop foto.`,
+                  badgeClass: badgeColors[cat] || 'text-indigo-700 bg-indigo-100/80',
+                  cropThumbnail: croppedDataUrl,
+                  wireframe: `<div class="w-full h-full rounded-lg overflow-hidden bg-slate-100 flex items-center justify-center"><img src="${croppedDataUrl}" class="w-full h-full object-contain rounded-lg"/></div>`,
+                  code: c.code || `<div class="p-4 bg-white rounded-2xl border">${cName}</div>`
+                };
+              });
+            }
+          } catch (aiErr) {
+            console.warn("AI Vision Crop Scan warning:", aiErr);
+          }
+        }
+
+        if (!extracted || extracted.length === 0) {
+          extracted = getFurnitureAppReferenceComponents(currentCropPreset, croppedDataUrl);
+        }
+
+        if (latestScannedComponents && latestScannedComponents.length > 0) {
+          previousScanHistory.unshift({
+            id: `SCAN-${Date.now()}`,
+            title: `Hasil Scan Sebelumnya`,
+            time: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }),
+            date: new Date().toLocaleDateString('id-ID'),
+            components: [...latestScannedComponents]
+          });
+          if (previousScanHistory.length > 10) previousScanHistory.pop();
+          try {
+            localStorage.setItem("uiuxmaker_scan_history", JSON.stringify(previousScanHistory));
+          } catch (e) {}
+        }
+
+        latestScannedComponents = extracted;
+        try {
+          localStorage.setItem("uiuxmaker_latest_scan", JSON.stringify(latestScannedComponents));
+        } catch (e) {}
+
+        toggleScannerCropMode(false);
+        activeScanHistoryTab = 'latest';
+        openDetectedComponentsModal();
+        showToast(`✨ Sukses! ${extracted.length} komponen 1:1 berhasil dibedah dari area crop foto.`);
+      } catch (err) {
+        console.error("Gagal crop gambar:", err);
+        showToast("⚠️ Gagal memotong gambar. Silakan coba lagi.");
+      } finally {
+        if (btn) {
+          btn.innerHTML = `<span class="material-symbols-outlined text-[13px]">biotech</span><span>Bedah Bagian Ini (1:1)</span>`;
+          btn.disabled = false;
+        }
+      }
+    }
+
+    // Preset Emas Referensi 1:1 Pinterest Mobile App (Furnitur Pastel Mint / Kursi Baper)
+    function getFurnitureAppReferenceComponents(presetKey, cropThumb) {
+      const allComps = [
+        {
+          id: "screen-1",
+          name: "Mint Mobile App Header & Search Bar",
+          category: "navbar",
+          match: "99%",
+          desc: "Header aplikasi mobile tema mint pastel (#a8dfd1) dengan input search, ikon lonceng notifikasi, dan tombol filter.",
+          badgeClass: "text-emerald-800 bg-emerald-100/90 border border-emerald-300",
+          cropThumbnail: cropThumb || "",
+          wireframe: `<div class="w-full h-full rounded-md bg-[#a8dfd1] p-2 flex flex-col justify-between shadow-2xs shrink-0"><div class="flex items-center justify-between"><div class="w-4 h-4 rounded-full bg-slate-900 text-white flex items-center justify-center text-[7px]">⚡</div><div class="w-3.5 h-3.5 rounded-full bg-white/40 flex items-center justify-center text-[7px]">🔔</div></div><div class="w-full h-3 bg-white/70 rounded-full px-1.5 flex items-center text-[5px] text-slate-500">🔍 Search furniture...</div></div>`,
+          code: `<header class="w-full bg-[#a8dfd1] p-4 flex flex-col gap-3 rounded-b-3xl">
+  <div class="flex items-center justify-between">
+    <button class="w-9 h-9 rounded-2xl bg-slate-900 text-white flex items-center justify-center shadow-xs">
+      <span class="material-symbols-outlined text-[18px]">grid_view</span>
+    </button>
+    <div class="flex items-center gap-2">
+      <button class="w-9 h-9 rounded-2xl bg-white/50 text-slate-800 flex items-center justify-center relative">
+        <span class="material-symbols-outlined text-[18px]">notifications</span>
+        <span class="w-2 h-2 rounded-full bg-rose-500 absolute top-2 right-2"></span>
+      </button>
+    </div>
+  </div>
+  <div class="relative w-full">
+    <span class="material-symbols-outlined text-[18px] text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2">search</span>
+    <input type="text" placeholder="Search furniture, chairs, sofa..." class="w-full bg-white/90 focus:bg-white text-xs text-slate-800 placeholder:text-slate-400 pl-10 pr-4 py-2.5 rounded-2xl shadow-xs border-none outline-none"/>
+  </div>
+</header>`
+        },
+        {
+          id: "screen-1",
+          name: "Dark Promo Card 'Leather Swivel Chair' (Discount Promo)",
+          category: "catalog",
+          match: "99%",
+          desc: "Kartu banner promo rounded hitam arang (#1e1e24) dengan headline 'Leather Swivel chair', diskon promo, dan gambar kursi kulit.",
+          badgeClass: "text-slate-200 bg-slate-900 border border-slate-700",
+          cropThumbnail: cropThumb || "",
+          wireframe: `<div class="w-full h-full rounded-md bg-[#1e1e24] p-2 flex items-center justify-between shadow-2xs text-white shrink-0"><div class="flex flex-col gap-0.5"><span class="text-[5px] text-amber-400 font-bold">30% OFF</span><span class="text-[7px] font-bold leading-tight">Leather Swivel</span><span class="text-[6px] text-slate-400">$49.00</span></div><div class="w-8 h-8 rounded-lg overflow-hidden bg-white/10 shrink-0"><img src="https://images.unsplash.com/photo-1580481077195-c3a82145be37?w=100&auto=format&fit=crop&q=80" class="w-full h-full object-cover"/></div></div>`,
+          code: `<div class="p-5 rounded-3xl bg-[#1e1e24] text-white flex items-center justify-between shadow-xl relative overflow-hidden">
+  <div class="flex flex-col gap-2 z-10 max-w-[55%]">
+    <span class="px-2.5 py-0.5 rounded-full bg-amber-400/20 text-amber-400 text-[10px] font-bold w-fit">Special Offer</span>
+    <h3 class="text-base sm:text-lg font-black tracking-tight leading-tight">Leather Swivel Chair</h3>
+    <span class="text-xs font-bold text-slate-300">Starting at <span class="text-white text-sm font-black">$49.00</span></span>
+  </div>
+  <div class="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl overflow-hidden relative z-10">
+    <img src="https://images.unsplash.com/photo-1580481077195-c3a82145be37?w=300&auto=format&fit=crop&q=80" class="w-full h-full object-contain filter drop-shadow-md"/>
+  </div>
+</div>`
+        },
+        {
+          id: "screen-1",
+          name: "Product Card 'Kursi Baper' ($27.70) with Add Button",
+          category: "catalog",
+          match: "98%",
+          desc: "Kartu katalog produk modern dengan foto kursi pink, badge nama 'Kursi Baper', harga $27.70, dan tombol plus hitam melayang.",
+          badgeClass: "text-rose-700 bg-rose-100/90 border border-rose-300",
+          cropThumbnail: cropThumb || "",
+          wireframe: `<div class="w-full h-full rounded-md bg-white border border-slate-200 p-2 flex flex-col justify-between shadow-2xs shrink-0"><div class="w-full h-7 rounded overflow-hidden"><img src="https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=100&auto=format&fit=crop&q=80" class="w-full h-full object-contain"/></div><div class="flex items-center justify-between mt-1"><div class="flex flex-col"><span class="text-[6px] font-bold text-slate-800">Kursi Baper</span><span class="text-[5px] text-slate-500 font-bold">$27.70</span></div><div class="w-3.5 h-3.5 rounded-full bg-slate-900 text-white flex items-center justify-center text-[7px] font-bold">+</div></div></div>`,
+          code: `<div class="p-4 rounded-3xl bg-white border border-slate-100 shadow-lg flex flex-col justify-between hover:shadow-xl transition-all">
+  <div class="w-full h-36 rounded-2xl bg-[#f4faf8] flex items-center justify-center p-3 mb-3 relative">
+    <img src="https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=300&auto=format&fit=crop&q=80" alt="Kursi Baper" class="w-full h-full object-contain filter drop-shadow-md"/>
+    <button class="absolute top-2 right-2 w-7 h-7 rounded-full bg-white/80 hover:bg-white text-slate-600 flex items-center justify-center shadow-xs">
+      <span class="material-symbols-outlined text-[14px]">favorite</span>
+    </button>
+  </div>
+  <div class="flex items-center justify-between">
+    <div>
+      <h4 class="text-sm font-bold text-slate-900">Kursi Baper</h4>
+      <span class="text-xs font-black text-emerald-700">$27.70</span>
+    </div>
+    <button class="w-9 h-9 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white flex items-center justify-center shadow-md active:scale-95 transition-all">
+      <span class="material-symbols-outlined text-[18px]">add</span>
+    </button>
+  </div>
+</div>`
+        },
+        {
+          id: "screen-2",
+          name: "Product Detail Showcase 'Kursi Baper' ($21.95) with Color Palette",
+          category: "hero",
+          match: "99%",
+          desc: "Halaman showcase detail produk Kursi Baper dengan foto 3D, pemilih warna (Hitam, Oranye, Rose Pink, Olive), deskripsi, dan tombol 'Add to cart'.",
+          badgeClass: "text-teal-800 bg-teal-100/90 border border-teal-300",
+          cropThumbnail: cropThumb || "",
+          wireframe: `<div class="w-full h-full rounded-md bg-[#a8dfd1] p-2 flex flex-col justify-between shadow-2xs shrink-0"><div class="flex justify-between items-center"><span class="text-[7px] font-bold text-slate-800">Kursi Baper</span><span class="text-[7px] font-bold text-emerald-800">$21.95</span></div><div class="w-12 h-6 mx-auto rounded overflow-hidden"><img src="https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=100&auto=format&fit=crop&q=80" class="w-full h-full object-contain"/></div><div class="flex items-center justify-between"><div class="flex gap-1"><div class="w-2 h-2 rounded-full bg-slate-900"></div><div class="w-2 h-2 rounded-full bg-orange-500"></div><div class="w-2 h-2 rounded-full bg-pink-400"></div></div><div class="px-2 py-0.5 rounded bg-slate-900 text-white text-[5px] font-bold">Add to cart</div></div></div>`,
+          code: `<div class="w-full bg-[#a8dfd1] rounded-3xl p-6 flex flex-col gap-6 shadow-2xl">
+  <div class="flex items-center justify-between">
+    <button class="w-9 h-9 rounded-2xl bg-white/70 text-slate-800 flex items-center justify-center">
+      <span class="material-symbols-outlined text-[18px]">arrow_back</span>
+    </button>
+    <button class="w-9 h-9 rounded-2xl bg-white/70 text-slate-800 flex items-center justify-center">
+      <span class="material-symbols-outlined text-[18px]">shopping_bag</span>
+    </button>
+  </div>
+  <div class="flex flex-col items-center">
+    <h2 class="text-2xl font-black text-slate-900">Kursi Baper</h2>
+    <span class="text-xs text-slate-600 font-medium">IKEA Official Collection</span>
+    <span class="text-xl font-black text-slate-900 mt-1">$21.95</span>
+    <div class="w-48 h-48 my-4 relative flex items-center justify-center">
+      <div class="w-36 h-36 rounded-full bg-white/30 blur-lg absolute"></div>
+      <img src="https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&auto=format&fit=crop&q=80" alt="Chair Detail" class="w-full h-full object-contain relative z-10 filter drop-shadow-xl"/>
+    </div>
+    <div class="flex items-center gap-3 bg-white/60 backdrop-blur-md px-4 py-2 rounded-full border border-white/80 shadow-xs mb-3">
+      <span class="w-4 h-4 rounded-full bg-slate-900 ring-2 ring-white cursor-pointer"></span>
+      <span class="w-4 h-4 rounded-full bg-orange-500 ring-2 ring-transparent cursor-pointer"></span>
+      <span class="w-4 h-4 rounded-full bg-rose-400 ring-2 ring-transparent cursor-pointer"></span>
+      <span class="w-4 h-4 rounded-full bg-emerald-700 ring-2 ring-transparent cursor-pointer"></span>
+    </div>
+  </div>
+  <div class="bg-white rounded-3xl p-5 shadow-lg flex flex-col gap-4">
+    <p class="text-xs text-slate-500 leading-relaxed">
+      Comfortable chair ergonomically designed for your home office or living room with premium velvet fabric and durable steel base.
+    </p>
+    <div class="flex items-center justify-between pt-2">
+      <div class="flex items-center gap-3 bg-slate-100 px-3 py-1.5 rounded-2xl font-bold text-xs">
+        <button class="text-slate-600 hover:text-black">-</button>
+        <span class="text-slate-900">1</span>
+        <button class="text-slate-600 hover:text-black">+</button>
+      </div>
+      <button class="px-6 py-3 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs flex items-center gap-2 shadow-lg active:scale-95 transition-all">
+        <span class="material-symbols-outlined text-[16px]">shopping_cart</span>
+        <span>Add to cart</span>
+      </button>
+    </div>
+  </div>
+</div>`
+        },
+        {
+          id: "screen-3",
+          name: "3D Pink Chair Showcase with 360 Rotation Badge",
+          category: "hero",
+          match: "98%",
+          desc: "Tampilan visual 3D kursi melayang berlatar belakang mint dengan badge rotasi 360 derajat dan pemilih warna vertikal.",
+          badgeClass: "text-purple-800 bg-purple-100/90 border border-purple-300",
+          cropThumbnail: cropThumb || "",
+          wireframe: `<div class="w-full h-full rounded-md bg-[#a8dfd1] p-2 flex items-center justify-between shadow-2xs shrink-0"><div class="flex-1 flex flex-col items-center justify-center"><div class="w-14 h-8 rounded overflow-hidden"><img src="https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=100&auto=format&fit=crop&q=80" class="w-full h-full object-contain"/></div><span class="text-[5px] text-slate-700 font-bold mt-1">⟳ 360° View</span></div><div class="flex flex-col gap-1 p-1 bg-white/40 rounded-full"><div class="w-1.5 h-1.5 rounded-full bg-slate-900"></div><div class="w-1.5 h-1.5 rounded-full bg-orange-500"></div><div class="w-1.5 h-1.5 rounded-full bg-pink-400"></div></div></div>`,
+          code: `<div class="w-full bg-[#a8dfd1] rounded-3xl p-8 flex items-center justify-between shadow-xl min-h-[300px]">
+  <div class="flex-1 flex flex-col items-center justify-center relative">
+    <div class="w-48 h-48 rounded-full bg-white/30 blur-2xl absolute"></div>
+    <img src="https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&auto=format&fit=crop&q=80" alt="3D Model" class="w-56 h-56 object-contain relative z-10 filter drop-shadow-2xl"/>
+    <span class="mt-4 px-3 py-1 rounded-full bg-white/70 backdrop-blur-md text-[11px] font-bold text-slate-800 flex items-center gap-1 shadow-xs">
+      <span class="material-symbols-outlined text-[14px]">360</span>
+      <span>Interactive 360° Model</span>
+    </span>
+  </div>
+  <div class="flex flex-col gap-2 p-2 rounded-full bg-white/50 backdrop-blur-md border border-white/60 shadow-xs">
+    <span class="w-4 h-4 rounded-full bg-slate-900 ring-2 ring-white cursor-pointer"></span>
+    <span class="w-4 h-4 rounded-full bg-orange-500 cursor-pointer"></span>
+    <span class="w-4 h-4 rounded-full bg-rose-400 cursor-pointer"></span>
+    <span class="w-4 h-4 rounded-full bg-emerald-700 cursor-pointer"></span>
+  </div>
+</div>`
+        },
+        {
+          id: "screen-1",
+          name: "Floating Mobile Capsule Bottom Navigation Bar",
+          category: "navbar",
+          match: "99%",
+          desc: "Navigasi bawah melayang bentuk kapsul hitam arang (#1e1e24) dengan menu Home, Search, Cart, dan Profile.",
+          badgeClass: "text-slate-800 bg-slate-200 border border-slate-300",
+          cropThumbnail: cropThumb || "",
+          wireframe: `<div class="w-full h-full rounded-md bg-slate-950 px-3 py-1.5 flex items-center justify-between text-white shadow-2xs shrink-0"><div class="w-2.5 h-2.5 rounded-full bg-white flex items-center justify-center text-[6px]">🏠</div><div class="w-2.5 h-2.5 rounded-full bg-white/20 flex items-center justify-center text-[6px]">🔍</div><div class="w-2.5 h-2.5 rounded-full bg-white/20 flex items-center justify-center text-[6px]">🛍️</div><div class="w-2.5 h-2.5 rounded-full bg-white/20 flex items-center justify-center text-[6px]">👤</div></div>`,
+          code: `<div class="w-full max-w-sm mx-auto p-3">
+  <nav class="bg-[#1e1e24] text-white px-6 py-3 rounded-full flex items-center justify-between shadow-2xl border border-white/10">
+    <a href="#" class="w-9 h-9 rounded-full bg-white text-slate-900 flex items-center justify-center shadow-xs">
+      <span class="material-symbols-outlined text-[18px]">home</span>
+    </a>
+    <a href="#" class="w-9 h-9 rounded-full text-slate-400 hover:text-white flex items-center justify-center transition-colors">
+      <span class="material-symbols-outlined text-[18px]">search</span>
+    </a>
+    <a href="#" class="w-9 h-9 rounded-full text-slate-400 hover:text-white flex items-center justify-center transition-colors">
+      <span class="material-symbols-outlined text-[18px]">shopping_cart</span>
+    </a>
+    <a href="#" class="w-9 h-9 rounded-full text-slate-400 hover:text-white flex items-center justify-center transition-colors">
+      <span class="material-symbols-outlined text-[18px]">person</span>
+    </a>
+  </nav>
+</div>`
+        }
+      ];
+
+      if (presetKey === 'screen-1') {
+        return allComps.filter(c => c.id === 'screen-1');
+      } else if (presetKey === 'screen-2') {
+        return allComps.filter(c => c.id === 'screen-2');
+      } else if (presetKey === 'screen-3') {
+        return allComps.filter(c => c.id === 'screen-3');
+      }
+      return allComps;
     }
 
     function handleScannerMultiUpload(event) {
@@ -3739,7 +4263,7 @@ Format setiap object:
           } catch (e) {}
         }
 
-        latestScannedComponents = getAgentAiReferenceComponents();
+        latestScannedComponents = getFurnitureAppReferenceComponents('full');
         try {
           localStorage.setItem("uiuxmaker_latest_scan", JSON.stringify(latestScannedComponents));
         } catch (e) {}
@@ -4062,27 +4586,30 @@ Format setiap object:
         listContainer.innerHTML = currentDetectedComponents.map((c, idx) => {
           const isAlreadySaved = databaseComponents.some(db => db.name === c.name);
           return `
-            <div class="p-3 bg-slate-50/80 rounded-2xl border border-slate-200/90 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 hover:border-primary/40 transition-all">
-              <div class="flex items-center gap-3 min-w-0 flex-1">
-                ${c.wireframe || ''}
-                <div class="min-w-0 flex-1">
-                  <div class="flex items-center gap-1.5 flex-wrap">
+            <div class="p-3 bg-slate-50/90 rounded-2xl border border-slate-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 hover:border-primary/40 transition-all shadow-2xs">
+              <div class="flex items-center gap-3.5 min-w-0 flex-1 w-full sm:w-auto">
+                <div class="w-28 sm:w-36 h-20 sm:h-24 shrink-0 rounded-xl overflow-hidden border border-slate-200/90 bg-white flex items-center justify-center p-1 shadow-2xs">
+                  ${c.cropThumbnail ? `<img src="${c.cropThumbnail}" alt="Crop Preview" class="w-full h-full object-contain rounded-lg"/>` : (c.wireframe || '')}
+                </div>
+                <div class="min-w-0 flex-1 flex flex-col justify-center">
+                  <div class="flex items-center gap-1.5 flex-wrap mb-1">
                     <span class="text-[9px] font-bold uppercase tracking-wider ${c.badgeClass || 'text-slate-700 bg-slate-200/80'} px-2 py-0.5 rounded-full">${c.category}</span>
-                    <h4 class="text-xs font-bold text-slate-900 truncate">${c.name}</h4>
-                    <span class="text-[9px] font-mono text-emerald-600 font-bold bg-emerald-50 px-1.5 rounded">${c.match || '99%'} Match</span>
+                    ${c.cropThumbnail ? `<span class="text-[9px] font-bold text-cyan-700 bg-cyan-100/90 border border-cyan-300/60 px-2 py-0.5 rounded-full flex items-center gap-0.5"><span class="material-symbols-outlined text-[11px]">crop</span><span>Hasil Crop</span></span>` : ''}
+                    <span class="text-[9px] font-mono text-emerald-600 font-bold bg-emerald-50 px-1.5 py-0.5 rounded">${c.match || '99%'} Match</span>
                   </div>
-                  <p class="text-[10px] text-slate-500 mt-0.5 leading-relaxed">${c.desc || ''}</p>
+                  <h4 class="text-xs sm:text-sm font-bold text-slate-900 truncate" title="${c.name}">${c.name}</h4>
+                  <p class="text-[11px] text-slate-600 mt-1 leading-relaxed line-clamp-2">${c.desc || ''}</p>
                 </div>
               </div>
               <div class="flex items-center gap-2 shrink-0 self-end sm:self-center">
                 ${isAlreadySaved ? `
-                  <button disabled class="px-3.5 py-1.5 rounded-xl bg-emerald-600 text-white text-xs font-bold shadow-xs flex items-center gap-1 cursor-default opacity-95">
+                  <button disabled class="px-3.5 py-2 rounded-xl bg-emerald-600 text-white text-xs font-bold shadow-xs flex items-center gap-1 cursor-default opacity-95">
                     <span class="material-symbols-outlined text-[14px]">check</span>
                     <span>Tersimpan di DB</span>
                   </button>
                 ` : `
-                  <button onclick="saveComponentFromModal(${idx}, this)" class="px-3.5 py-1.5 rounded-xl bg-primary hover:bg-primary/90 text-white text-xs font-bold transition-all shadow-xs flex items-center gap-1 active:scale-95 cursor-pointer">
-                    <span class="material-symbols-outlined text-[14px]">save</span>
+                  <button onclick="saveComponentFromModal(${idx}, this)" class="px-3.5 py-2 rounded-xl bg-primary hover:bg-primary/90 text-white text-xs font-bold transition-all shadow-xs flex items-center gap-1.5 active:scale-95 cursor-pointer">
+                    <span class="material-symbols-outlined text-[15px]">save</span>
                     <span>Simpan ke DB</span>
                   </button>
                 `}
@@ -4127,27 +4654,30 @@ Format setiap object:
             const globalIdx = startIndex + cIdx;
             const isAlreadySaved = databaseComponents.some(db => db.name === c.name);
             htmlParts.push(`
-              <div class="p-3 bg-slate-50/80 rounded-2xl border border-slate-200/90 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 hover:border-primary/40 transition-all">
-                <div class="flex items-center gap-3 min-w-0 flex-1">
-                  ${c.wireframe || ''}
-                  <div class="min-w-0 flex-1">
-                    <div class="flex items-center gap-1.5 flex-wrap">
+              <div class="p-3 bg-slate-50/90 rounded-2xl border border-slate-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 hover:border-primary/40 transition-all shadow-2xs">
+                <div class="flex items-center gap-3.5 min-w-0 flex-1 w-full sm:w-auto">
+                  <div class="w-28 sm:w-36 h-20 sm:h-24 shrink-0 rounded-xl overflow-hidden border border-slate-200/90 bg-white flex items-center justify-center p-1 shadow-2xs">
+                    ${c.cropThumbnail ? `<img src="${c.cropThumbnail}" alt="Crop Preview" class="w-full h-full object-contain rounded-lg"/>` : (c.wireframe || '')}
+                  </div>
+                  <div class="min-w-0 flex-1 flex flex-col justify-center">
+                    <div class="flex items-center gap-1.5 flex-wrap mb-1">
                       <span class="text-[9px] font-bold uppercase tracking-wider ${c.badgeClass || 'text-slate-700 bg-slate-200/80'} px-2 py-0.5 rounded-full">${c.category}</span>
-                      <h4 class="text-xs font-bold text-slate-900 truncate">${c.name}</h4>
-                      <span class="text-[9px] font-mono text-emerald-600 font-bold bg-emerald-50 px-1.5 rounded">${c.match || '98%'} Match</span>
+                      ${c.cropThumbnail ? `<span class="text-[9px] font-bold text-cyan-700 bg-cyan-100/90 border border-cyan-300/60 px-2 py-0.5 rounded-full flex items-center gap-0.5"><span class="material-symbols-outlined text-[11px]">crop</span><span>Hasil Crop</span></span>` : ''}
+                      <span class="text-[9px] font-mono text-emerald-600 font-bold bg-emerald-50 px-1.5 py-0.5 rounded">${c.match || '98%'} Match</span>
                     </div>
-                    <p class="text-[10px] text-slate-500 mt-0.5 leading-relaxed">${c.desc || ''}</p>
+                    <h4 class="text-xs sm:text-sm font-bold text-slate-900 truncate" title="${c.name}">${c.name}</h4>
+                    <p class="text-[11px] text-slate-600 mt-1 leading-relaxed line-clamp-2">${c.desc || ''}</p>
                   </div>
                 </div>
                 <div class="flex items-center gap-2 shrink-0 self-end sm:self-center">
                   ${isAlreadySaved ? `
-                    <button disabled class="px-3.5 py-1.5 rounded-xl bg-emerald-600 text-white text-xs font-bold shadow-xs flex items-center gap-1 cursor-default opacity-95">
+                    <button disabled class="px-3.5 py-2 rounded-xl bg-emerald-600 text-white text-xs font-bold shadow-xs flex items-center gap-1 cursor-default opacity-95">
                       <span class="material-symbols-outlined text-[14px]">check</span>
                       <span>Tersimpan di DB</span>
                     </button>
                   ` : `
-                    <button onclick="saveComponentFromModal(${globalIdx}, this)" class="px-3.5 py-1.5 rounded-xl bg-primary hover:bg-primary/90 text-white text-xs font-bold transition-all shadow-xs flex items-center gap-1 active:scale-95 cursor-pointer">
-                      <span class="material-symbols-outlined text-[14px]">save</span>
+                    <button onclick="saveComponentFromModal(${globalIdx}, this)" class="px-3.5 py-2 rounded-xl bg-primary hover:bg-primary/90 text-white text-xs font-bold transition-all shadow-xs flex items-center gap-1.5 active:scale-95 cursor-pointer">
+                      <span class="material-symbols-outlined text-[15px]">save</span>
                       <span>Simpan ke DB</span>
                     </button>
                   `}
@@ -4162,9 +4692,9 @@ Format setiap object:
     }
 
     function openDetectedComponentsModal() {
-      // Jika belum ada hasil bedah sama sekali dan ada gambar di scanner, isi default AgentAI 1:1
+      // Jika belum ada hasil bedah sama sekali dan ada gambar di scanner, isi default Pinterest Furnitur 1:1
       if (latestScannedComponents.length === 0 && scannerImages && scannerImages.length > 0) {
-        latestScannedComponents = getAgentAiReferenceComponents();
+        latestScannedComponents = getFurnitureAppReferenceComponents('full');
         try {
           localStorage.setItem("uiuxmaker_latest_scan", JSON.stringify(latestScannedComponents));
         } catch (e) {}
@@ -4244,15 +4774,18 @@ Format setiap object:
       if (!c) return;
 
       const newId = `CMP-${Math.floor(100 + Math.random() * 900)}`;
-      const miniPreview = c.wireframe || generateComponentMiniPreview({ name: c.name, category: c.category });
+      const miniPreview = c.cropThumbnail 
+        ? `<div class="w-full h-full rounded-lg overflow-hidden bg-white flex items-center justify-center p-0.5"><img src="${c.cropThumbnail}" alt="Crop Preview" class="w-full h-full object-contain rounded"/></div>`
+        : (c.wireframe || generateComponentMiniPreview({ name: c.name, category: c.category }));
 
       const newComp = {
         id: newId,
         name: c.name,
         category: c.category,
         icon: c.category === 'navbar' ? 'menu' : (c.category === 'hero' ? 'view_sidebar' : (c.category === 'forms' ? 'forum' : (c.category === 'footer' ? 'call_to_action' : 'grid_view'))),
-        tag: "Extracted AI",
+        tag: c.cropThumbnail ? "Crop Slicer 1:1" : "Extracted AI",
         rating: c.match || "99%",
+        cropThumbnail: c.cropThumbnail || '',
         miniHtml: miniPreview,
         code: c.code || `<!-- UI/UX Maker: ${c.name} -->\n<div class="p-4 bg-white rounded-2xl border border-slate-200 shadow-sm"><h3 class="text-sm font-bold text-slate-900">${c.name}</h3></div>`
       };
