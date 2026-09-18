@@ -4044,33 +4044,34 @@
 
       const prompt = `Anda adalah "UMAKI Super-Vision UI/UX Architect" kelas dunia, dilatih khusus untuk membedah screenshot antarmuka website/aplikasi menjadi komponen-komponen mandiri dengan standar akurasi 100% PERSIS (1:1 Pixel-Perfect Fidelity).
 
-PANDUAN TRAINING ARSITEKTUR WAJIB (5 PRINSIP UTAMA):
-1. PIXEL-COLOR & THEME FIDELITY:
-   - Identifikasi palet warna dominan (misal dark mode cybernetic #050507, border crimson glow rgba(239,68,68,0.4), capsule pill kaca backdrop-blur-md bg-white/[0.04] border-white/10, atau clean white #ffffff). Gunakan kelas warna dan nilai hex Tailwind CSS yang persis sama.
-2. VERBATIM COPYWRITING & REAL METRICS:
-   - DILARANG KERAS menggunakan teks placeholder "Lorem Ipsum" atau judul generik jika ada teks asli di foto!
-   - Baca dan salin persis teks judul, subjudul, angka statistik/metrik (misal: "120+", "3M+", "95% ROI", "$47"), nama orang/tokoh (misal: "Alex Collins"), kutipan testimoni, dan label tombol seperti yang tertulis di foto.
-3. GRANULAR MODULAR COMPONENTS:
-   - Pecah seluruh antarmuka yang terlihat menjadi komponen mandiri:
-     * navbar: floating capsule pill / top bar dengan brand logo asli, navigasi tengah, dan tombol aksi.
-     * hero: headline dramatis asli, subjudul, dual tombol CTA, visual utama (ubur-ubur / produk / mockup), dan strip 3 kartu metrik statistik.
-     * catalog: kartu bento grid, kartu fitur bernomor (01), showcase studio, atau kartu destinasi/harga/produk.
-     * testimonials: blok rating klien dengan 5 bintang emas, angka metrik besar, dan kartu kutipan dengan avatar profil nyata.
-     * banner: statement filosofi editorial besar, manifesto teks, atau banner promo diskon.
-     * footer: informasi hak cipta, kontak, dan tautan navigasi.
-4. HIGH-QUALITY ASSET CONTEXTUALIZATION:
-   - Sertakan URL gambar Unsplash beresolusi tinggi yang relevan dengan tema gambar (misal bioluminescent marine life untuk AI cyber, studio foto kreatif untuk agency, aerial island untuk maskapai/travel, cafe interior untuk kopi).
-5. PRODUCTION-READY STANDALONE CODE:
-   - Setiap komponen harus memiliki properti "code" berisi kode HTML Tailwind CSS mandiri yang responsif, rapi, dan langsung bisa dirender tanpa dependensi eksternal selain Tailwind dan Material Symbols.
+PROTOKOL DEKONSTRUKSI 5 TAHAP WAJIB:
+1. TAHAP 1 (INPUT): Periksa apakah gambar merupakan antarmuka penuh atau potongan crop komponen.
+2. TAHAP 2 (SCAN PERTAMA - GEOMETRI 2D: GARIS, SUDUT & BANGUN DATAR):
+   - Garis: Deteksi garis tepi (border), garis pemisah (divider/separator), dan ketebalannya (1px, 2px, dashed/solid).
+   - Sudut: Deteksi radius kelengkungan sudut (rounded-none, rounded-lg, rounded-2xl, rounded-3xl, s.d. rounded-full pill/kapsul).
+   - Bangun Datar: Deteksi kontur 2D (persegi panjang bar navigasi, kartu kotak, lingkaran tombol/avatar, chip kategori).
+3. TAHAP 3 (SCAN KEDUA - SPASIAL 3D, WARNA & FONT):
+   - Bangun Ruang & Elevasi 3D: Deteksi efek bayangan (shadow-sm s.d. shadow-2xl), layering z-index, elemen mengambang, glassmorphism, dan glow.
+   - Warna: Identifikasi palet kode HEX persis untuk background (misal #050507, #a8dfd1, #ffffff), surface kartu (#1e1e24), dan aksen tombol CTA (#ef4444, #0f172a).
+   - Font & Tipografi: Identifikasi gaya font (Sans-serif/Serif/Display), bobot (font-bold/black vs regular), dan skala ukuran font (display title s.d. body/caption).
+4. TAHAP 4 (JENIS & HIERARKI DESAIN):
+   - Jenis Desain: Tentukan genre antarmuka (Mobile App, E-Commerce Furnitur, Cyberpunk Dark Studio, SaaS Dashboard, Minimalist Editorial).
+   - Hierarki Desain: Petakan titik fokus utama (focal point), urutan seksi logis (navbar, hero, catalog, forms, footer), dan prioritas tombol CTA.
+5. TAHAP 5 (KONFIRMASI KE PENGGUNA):
+   - Susun hasil dekonstruksi dalam data terstruktur murni agar siap disajikan kepada pengguna untuk verifikasi sebelum disimpan ke Database.
+
+ATURAN COPYWRITING & KODE MANDIRI:
+- DILARANG KERAS menggunakan teks placeholder "Lorem Ipsum" jika ada teks asli di foto! Baca dan salin persis teks judul, subjudul, angka statistik/metrik ("120+", "3M+", "95% ROI", "$21.95"), dan label tombol secara VERBATIM.
+- Kode HTML harus berupa Tailwind CSS mandiri, responsif, rapi, dan langsung bisa dirender tanpa dependensi eksternal.
 
 KEMBALIKAN HANYA JSON VALID MURNI (Array of Objects) TANPA format markdown (\`\`\`json), TANPA penjelasan teks tambahan di luar JSON.
 Format setiap object:
 [
   {
-    "name": "Nama Komponen Spesifik (contoh: Bioluminescent Jellyfish AI Hero Showcase)",
+    "name": "Nama Komponen Spesifik (contoh: Mint Mobile App Header & Search Bar)",
     "category": "navbar | hero | catalog | pricing | testimonials | forms | footer | banner",
     "match": "99%",
-    "desc": "Penjelasan visual spesifik 1-2 kalimat mengenai elemen, warna hex, dan layout komponen tersebut",
+    "desc": "Penjelasan visual spesifik: bentuk bangun datar, sudut, kode hex warna, font, dan fungsinya dalam hierarki desain",
     "code": "<section class=\\"...\\">Kode HTML Tailwind CSS lengkap dan mandiri yang 100% persis bentuk, warna, dan proporsinya dengan foto</section>"
   }
 ]`;
